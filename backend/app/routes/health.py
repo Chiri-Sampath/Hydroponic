@@ -72,20 +72,13 @@ def email_status():
     """
     GET /api/email-status
     ---------------------
-    Diagnostics endpoint to test Gmail SMTP credentials and view last email status.
+    Diagnostics: shows which HTTP email provider is active and last send attempt.
     """
     try:
         from ..services.email_service import test_smtp_connection, LAST_EMAIL_STATUS
-        app_config = {
-            "MAIL_SERVER": current_app.config.get("MAIL_SERVER"),
-            "MAIL_PORT": current_app.config.get("MAIL_PORT"),
-            "MAIL_USERNAME": current_app.config.get("MAIL_USERNAME"),
-            "MAIL_PASSWORD": current_app.config.get("MAIL_PASSWORD"),
-            "MAIL_USE_TLS": current_app.config.get("MAIL_USE_TLS"),
-        }
-        smtp_report = test_smtp_connection(app_config)
+        provider_report = test_smtp_connection()
         return jsonify({
-            "smtp_test": smtp_report,
+            "provider_test": provider_report,
             "last_email_attempt": LAST_EMAIL_STATUS
         }), 200
     except Exception as e:
