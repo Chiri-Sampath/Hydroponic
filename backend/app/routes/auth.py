@@ -297,15 +297,26 @@ def forgot_password():
 
     _write_audit("user.forgot_password", user_id=user.id)
 
+    # Construct secure password reset URL pointing to frontend
+    frontend_base = current_app.config.get("FRONTEND_URL", "https://hydroponic-frontend-seven.vercel.app").rstrip("/")
+    reset_url = f"{frontend_base}/pages/user/reset-password.html?token={token}"
+
+    # Send reset email from hydroponiccrop@gmail.com
+    try:
+        from ..services.email_service import send_password_reset_email
+        send_password_reset_email(user.email, user.full_name, reset_url)
+    except Exception as email_err:
+        current_app.logger.error(f"Failed to dispatch reset email to {user.email}: {email_err}")
+
     response_data = {
         "success": True,
-        "message": "If the email is registered, a reset link will be sent.",
+        "message": "If the email is registered, a password reset link has been sent to your email address.",
     }
 
-    # DEMO MODE: expose token in response for academic prototype only
-    if current_app.config.get("FLASK_ENV") == "development":
+    # If SMTP is not yet configured or in development, provide direct token as fallback
+    if current_app.config.get("FLASK_ENV") == "development" or not current_app.config.get("MAIL_PASSWORD"):
         response_data["_demo_reset_token"] = token
-        response_data["_demo_note"] = "Token shown for development only. Remove in production."
+        response_data["_demo_note"] = "Instant reset link available below (SMTP fallback)."
 
     return jsonify(response_data), 200
 

@@ -64,8 +64,17 @@ class BaseConfig:
     MAX_CONTENT_LENGTH = int(os.environ.get("MAX_CONTENT_LENGTH_MB", 10)) * 1024 * 1024
     ALLOWED_UPLOAD_EXTENSIONS = {"pdf", "png", "jpg", "jpeg", "tiff", "tif"}
 
-    # CORS
-    FRONTEND_URL: str = os.environ.get("FRONTEND_URL", "http://localhost:5500")
+    # CORS & Web Frontend URL
+    FRONTEND_URL: str = os.environ.get("FRONTEND_URL", "https://hydroponic-frontend-seven.vercel.app")
+
+    # Email / SMTP Configuration (Gmail)
+    MAIL_SERVER: str = os.environ.get("MAIL_SERVER", "smtp.gmail.com")
+    MAIL_PORT: int = int(os.environ.get("MAIL_PORT", 587))
+    MAIL_USE_TLS: bool = os.environ.get("MAIL_USE_TLS", "true").lower() in ("true", "1", "yes")
+    MAIL_USE_SSL: bool = os.environ.get("MAIL_USE_SSL", "false").lower() in ("true", "1", "yes")
+    MAIL_USERNAME: str = os.environ.get("MAIL_USERNAME", os.environ.get("SMTP_USER", "hydroponiccrop@gmail.com"))
+    MAIL_PASSWORD: str = os.environ.get("MAIL_PASSWORD", os.environ.get("SMTP_PASS", os.environ.get("GMAIL_APP_PASSWORD", "")))
+    MAIL_DEFAULT_SENDER: str = os.environ.get("MAIL_DEFAULT_SENDER", "AgriSmart AI <hydroponiccrop@gmail.com>")
 
     # Weather API (Open-Meteo — no API key needed for free tier)
     WEATHER_API_BASE_URL: str = os.environ.get(
