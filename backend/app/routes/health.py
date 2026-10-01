@@ -30,7 +30,7 @@ def health_check():
             "status": "ok",
             "service": current_app.config.get("APP_NAME", "AgriSmart AI"),
             "version": current_app.config.get("APP_VERSION", "1.0.0"),
-            "build": "2026.10.02-v6-verified",
+            "build": "2026.10.02-v7-ready",
             "database": db_status,
             "products_count": products_count,
         }
@@ -54,7 +54,7 @@ def init_database():
         count = Product.query.count()
         return jsonify({
             "success": True,
-            "build": "2026.10.02-v6-verified",
+            "build": "2026.10.02-v7-ready",
             "message": "Database initialized and master data seeded successfully",
             "products_count": count
         }), 200
@@ -96,7 +96,7 @@ def email_test():
     from datetime import datetime, timezone, timedelta
     from ..extensions import db
     from ..models.user import User
-    from ..routes.auth import generate_reset_token
+    from ..utils.security import generate_reset_token
     from ..services.email_service import send_password_reset_email, LAST_EMAIL_STATUS
 
     try:
