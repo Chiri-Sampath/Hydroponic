@@ -23,10 +23,10 @@ class BaseConfig:
     """Base configuration shared by all environments."""
 
     # Flask
-    SECRET_KEY: str = os.environ["SECRET_KEY"]
+    SECRET_KEY: str = os.environ.get("SECRET_KEY", "agrismart-dev-secret-key-change-in-prod-2026")
 
     # JWT
-    JWT_SECRET_KEY: str = os.environ["JWT_SECRET_KEY"]
+    JWT_SECRET_KEY: str = os.environ.get("JWT_SECRET_KEY", "agrismart-jwt-dev-secret-change-in-prod-2026")
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(
         minutes=int(os.environ.get("JWT_ACCESS_TOKEN_EXPIRES_MINUTES", 43200))
     )
