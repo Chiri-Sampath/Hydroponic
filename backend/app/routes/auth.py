@@ -308,15 +308,10 @@ def forgot_password():
     except Exception as email_err:
         current_app.logger.error(f"Failed to dispatch reset email to {user.email}: {email_err}")
 
-    response_data = {
+    return jsonify({
         "success": True,
-        "message": "If the email is registered, a password reset link has been dispatched to your email address.",
-        "_demo_reset_token": token,
-        "reset_url": reset_url,
-        "_note": "Instant password reset link generated successfully."
-    }
-
-    return jsonify(response_data), 200
+        "message": "If this email is registered, a password reset link has been sent to your inbox.",
+    }), 200
 
 
 @auth_bp.route("/reset-password", methods=["POST"])
