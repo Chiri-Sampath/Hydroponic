@@ -31,6 +31,7 @@ def health_check():
             "status": "ok",
             "service": current_app.config.get("APP_NAME", "AgriSmart AI"),
             "version": current_app.config.get("APP_VERSION", "1.0.0"),
+            "build": "2026.10.01-v2",
             "database": db_status,
             "products_count": products_count,
         }
@@ -54,11 +55,13 @@ def init_database():
         count = Product.query.count()
         return jsonify({
             "success": True,
+            "build": "2026.10.01-v2",
             "message": "Database initialized and master data seeded successfully",
             "products_count": count
         }), 200
     except Exception as e:
         return jsonify({
             "success": False,
+            "build": "2026.10.01-v2",
             "error": str(e)
         }), 500
