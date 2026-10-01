@@ -25,7 +25,7 @@ class Batch(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False)
     batch_code = db.Column(db.String(100), unique=True, nullable=False, index=True)
     status = db.Column(
-        db.Enum("planned", "in_progress", "harvested", "sold", "archived"),
+        db.Enum("planned", "in_progress", "harvested", "sold", "archived", name="batch_status_enum"),
         default="planned",
     )
     start_date = db.Column(db.Date, nullable=True)
@@ -59,7 +59,7 @@ class QualityTest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     test_name = db.Column(db.String(300), nullable=False)
     test_category = db.Column(
-        db.Enum("legal", "buyer", "voluntary", "recommended"),
+        db.Enum("legal", "buyer", "voluntary", "recommended", name="quality_test_category_enum"),
         nullable=False,
     )
     purpose = db.Column(db.Text, nullable=True)
@@ -189,7 +189,7 @@ class LabReport(db.Model):
     file_type = db.Column(db.String(10), nullable=True)            # pdf / png / jpg
     file_size_bytes = db.Column(db.Integer, nullable=True)
     ocr_status = db.Column(
-        db.Enum("pending", "complete", "failed", "manual_review"),
+        db.Enum("pending", "complete", "failed", "manual_review", name="ocr_status_enum"),
         default="pending",
     )
     ocr_raw_text = db.Column(db.Text, nullable=True)
@@ -222,7 +222,7 @@ class TestResult(db.Model):
     result_unit = db.Column(db.String(100), nullable=True)
     specification_limit = db.Column(db.String(200), nullable=True)
     pass_fail = db.Column(
-        db.Enum("pass", "fail", "inconclusive", "not_applicable"),
+        db.Enum("pass", "fail", "inconclusive", "not_applicable", name="test_result_pass_fail_enum"),
         nullable=True,
     )
     needs_manual_verification = db.Column(db.Boolean, default=False)

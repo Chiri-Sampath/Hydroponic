@@ -213,7 +213,7 @@ class BuyerInquiry(db.Model):
     buyer_requirement_id = db.Column(db.Integer, db.ForeignKey("buyer_requirements.id"), nullable=False)
     producer_project_id = db.Column(db.Integer, db.ForeignKey("projects.id"), nullable=False)
     status = db.Column(
-        db.Enum("new", "contacted", "negotiating", "accepted", "rejected", "closed"),
+        db.Enum("new", "contacted", "negotiating", "accepted", "rejected", "closed", name="buyer_inquiry_status_enum"),
         default="new",
         index=True,
     )
