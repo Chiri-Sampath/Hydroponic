@@ -1,17 +1,4 @@
 {
   "version": 2,
-  "public": true,
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "https://agrismart-backend.onrender.com/api/$1"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
-  ]
+  "cleanUrls": true
 }
