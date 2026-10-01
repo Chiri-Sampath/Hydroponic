@@ -11,7 +11,7 @@ const AgriConfig = {
   // Uses local server when testing locally, and points to live production backend on Render/Vercel
   API_BASE: isLocalHost 
     ? 'http://localhost:5000/api' 
-    : (window.ENV_API_BASE || localStorage.getItem('AGRISMART_API_URL') || 'https://agrismart-backend.onrender.com/api'),
+    : (window.ENV_API_BASE || localStorage.getItem('AGRISMART_API_URL') || 'https://agrismart-backend-kx8k.onrender.com/api'),
   APP_NAME: 'AgriSmart AI',
   APP_VERSION: '1.0.0',
 
