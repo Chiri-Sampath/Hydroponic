@@ -136,6 +136,7 @@ def _seed_admin(session):
     default_users = [
         ("admin@agrismart.ai", "Admin@12345", admin_role, "Platform Administrator", "AgriSmart AI Core"),
         ("admin@agrismart.local", "Admin@AgriSmart2026!", admin_role, "Platform Administrator", "AgriSmart AI Core"),
+        ("hydroponiccrop@gmail.com", "Admin@AgriSmart2026!", admin_role, "Hydroponic Admin", "AgriSmart Hydroponics"),
         ("farmer@agrismart.ai", "Farmer@12345", user_role, "Ramesh Kumar", "GreenHarvest Urban Farms"),
         ("producer@agrismart.ai", "Producer@12345", user_role, "Priya Sharma", "AeroGrow Tech"),
         ("demo@agrismart.ai", "Demo@12345", user_role, "Demo Producer", "AgriSmart Demo Facility"),
