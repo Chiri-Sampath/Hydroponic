@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Project Wizard — AgriSmart AI</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <!-- Chart.js for Spider / Bar Charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- AgriSmart AI CSS -->
+  <link rel="stylesheet" href="../../css/variables.css?v=3.2.0">
+  <link rel="stylesheet" href="../../css/glass.css?v=3.2.0">
+  <link rel="stylesheet" href="../../css/layout.css?v=3.2.0">
+  <link rel="stylesheet" href="../../css/responsive.css?v=3.2.0">
+</head>
+<body>
+
+  <!-- Top Glass Navbar -->
+  <nav class="glass-navbar">
+    <a href="../../index.html" class="navbar-brand">
+      <div class="navbar-logo">🌱</div>
+      <div class="navbar-brand-text">Agri<span>Smart AI</span></div>
+    </a>
+    <div class="navbar-spacer"></div>
+    <div class="flex items-center gap-4">
+      <a href="dashboard.html" class="glass-btn glass-btn-sm">
+        <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i> Back to Dashboard
+      </a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content no-sidebar" style="max-width: 1000px; margin-left: auto; margin-right: auto;">
+    <!-- Step Progress Indicator -->
+    <div class="step-progress mb-8">
+      <div class="step-item active" id="step-ind-1">
+        <div class="step-dot">1</div>
+        <div class="step-label">Project</div>
+      </div>
+      <div class="step-item" id="step-ind-2">
+        <div class="step-dot">2</div>
+        <div class="step-label">Location & Weather</div>
+      </div>
+      <div class="step-item" id="step-ind-3">
+        <div class="step-dot">3</div>
+        <div class="step-label">Resources</div>
+      </div>
+      <div class="step-item" id="step-ind-4">
+        <div class="step-dot">4</div>
+        <div class="step-label">Objective</div>
+      </div>
+      <div class="step-item" id="step-ind-5">
+        <div class="step-dot">5</div>
+        <div class="step-label">AI Results</div>
+      </div>
+    </div>
+
+    <!-- WIZARD STEP 1: Project Basics -->
+    <div class="glass-card p-8 wizard-step" id="step-1">
+      <h2 class="text-2xl font-bold mb-2">Step 1: Project Details</h2>
+      <p class="text-sm text-secondary mb-6">Give your cultivation facility a name and brief description.</p>
+
+      <div class="glass-input-group mb-4">
+        <label class="glass-label" for="proj-name">Project Facility Name <span class="required">*</span></label>
+        <input id="proj-name" type="text" class="glass-input" placeholder="e.g. GreenHorizon Urban Farm" required>
+      </div>
+
+      <div class="glass-input-group mb-6">
+        <label class="glass-label" for="proj-desc">Description (Optional)</label>
+        <textarea id="proj-desc" class="glass-textarea" placeholder="Commercial vertical rooftop hydroponics facility for local restaurants."></textarea>
+      </div>
+
+      <div class="flex justify-end">
+        <button type="button" class="glass-btn glass-btn-primary glass-btn-lg" onclick="nextStep(1)">
+          Continue to Location <i data-lucide="arrow-right" style="width:16px; height:16px;"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- WIZARD STEP 2: Location & Auto Weather -->
+    <div class="glass-card p-8 wizard-step" id="step-2" style="display:none;">
+      <h2 class="text-2xl font-bold mb-2">Step 2: Location & Automated Climate</h2>
+      <p class="text-sm text-secondary mb-6">Enter your city or region. Weather and solar metrics will be retrieved automatically.</p>
+
+      <div class="glass-input-group mb-4">
+        <label class="glass-label" for="loc-query">Location Name or City <span class="required">*</span></label>
+        <div class="flex gap-2">
+          <input id="loc-query" type="text" class="glass-input" placeholder="e.g. Bengaluru, Pune, Hyderabad, Chennai" required>
+          <button type="button" class="glass-btn glass-btn-primary" id="btn-resolve-loc" onclick="resolveLocation()">
+            <i data-lucide="search" style="width:16px; height:16px;"></i> Resolve
+          </button>
+        </div>
+      </div>
+
+      <!-- Weather Preview Card (populated on resolve) -->
+      <div id="weather-preview-box" class="glass-panel p-5 mb-6" style="display:none; border-radius:12px;">
+        <div class="flex items-center justify-between mb-3">
+          <div class="font-semibold text-green flex items-center gap-2">
+            <i data-lucide="cloud-sun" style="width:18px; height:18px;"></i>
+            <span id="loc-resolved-name">Location Resolved</span>
+          </div>
+          <span class="glass-badge badge-primary">Open-Meteo Verified</span>
+        </div>
+        <div class="grid grid-3 text-center">
+          <div>
+            <div class="text-xs text-muted">Current Temp</div>
+            <div class="text-xl font-bold text-primary" id="weather-temp">-- °C</div>
+          </div>
+          <div>
+            <div class="text-xs text-muted">Humidity</div>
+            <div class="text-xl font-bold text-cyan" id="weather-humidity">-- %</div>
+          </div>
+          <div>
+            <div class="text-xs text-muted">Solar Potential</div>
+            <div class="text-sm font-bold text-warning" id="weather-solar">--</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-between">
+        <button type="button" class="glass-btn" onclick="prevStep(2)">Back</button>
+        <button type="button" class="glass-btn glass-btn-primary glass-btn-lg" onclick="nextStep(2)">
+          Continue to Resources <i data-lucide="arrow-right" style="width:16px; height:16px;"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- WIZARD STEP 3: Resource Profiling -->
+    <div class="glass-card p-8 wizard-step" id="step-3" style="display:none;">
+      <h2 class="text-2xl font-bold mb-2">Step 3: Available Resources</h2>
+      <p class="text-sm text-secondary mb-6">Enter your operational constraints and budget.</p>
+
+      <div class="grid grid-2 mb-4">
+        <div class="glass-input-group">
+          <label class="glass-label" for="res-area">Available Area (sq. meters) <span class="required">*</span></label>
+          <input id="res-area" type="number" class="glass-input" value="100" min="5" required>
+        </div>
+
+        <div class="glass-input-group">
+          <label class="glass-label" for="res-area-type">Environment Type <span class="required">*</span></label>
+          <select id="res-area-type" class="glass-select">
+            <option value="indoor">Indoor (Fully Climate Controlled)</option>
+            <option value="greenhouse" selected>Greenhouse (Polyhouse / Net-house)</option>
+            <option value="rooftop">Rooftop (Semi-enclosed / Open)</option>
+            <option value="outdoor">Outdoor / Open Air</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-2 mb-4">
+        <div class="glass-input-group">
+          <label class="glass-label" for="res-capital">Available Capital (₹ INR) <span class="required">*</span></label>
+          <input id="res-capital" type="number" class="glass-input" value="250000" min="10000" required>
+        </div>
+
+        <div class="glass-input-group">
+          <label class="glass-label" for="res-water">Daily Water Availability (Litres/Day) <span class="required">*</span></label>
+          <input id="res-water" type="number" class="glass-input" value="600" min="20" required>
+        </div>
+      </div>
+
+      <div class="glass-input-group mb-6">
+        <label class="glass-label" for="res-manpower">Available Workforce (Number of Workers)</label>
+        <input id="res-manpower" type="number" class="glass-input" value="2" min="1">
+      </div>
+
+      <div class="flex justify-between">
+        <button type="button" class="glass-btn" onclick="prevStep(3)">Back</button>
+        <button type="button" class="glass-btn glass-btn-primary glass-btn-lg" onclick="nextStep(3)">
+          Continue to Objective <i data-lucide="arrow-right" style="width:16px; height:16px;"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- WIZARD STEP 4: Objective Selection -->
+    <div class="glass-card p-8 wizard-step" id="step-4" style="display:none;">
+      <h2 class="text-2xl font-bold mb-2">Step 4: Cultivation Objective</h2>
+      <p class="text-sm text-secondary mb-6">Choose your primary goal. The AI dynamically shifts recommendation weights accordingly.</p>
+
+      <div class="grid grid-2 gap-4 mb-6">
+        <label class="glass-card p-4 flex items-start gap-3 cursor-pointer" style="cursor:pointer;">
+          <input type="radio" name="objective" value="maximum_profit" checked style="margin-top:4px; accent-color:var(--color-primary);">
+          <div>
+            <div class="font-bold text-primary">Maximum Profit Potential</div>
+            <div class="text-xs text-secondary">Prioritizes high-margin, high-revenue commercial crops (Herbs, Algae, Mushrooms).</div>
+          </div>
+        </label>
+
+        <label class="glass-card p-4 flex items-start gap-3 cursor-pointer" style="cursor:pointer;">
+          <input type="radio" name="objective" value="best_use_of_area" style="margin-top:4px; accent-color:var(--color-primary);">
+          <div>
+            <div class="font-bold text-primary">Best Use of Available Area</div>
+            <div class="text-xs text-secondary">Prioritizes high yield density per square meter and vertical stacking.</div>
+          </div>
+        </label>
+
+        <label class="glass-card p-4 flex items-start gap-3 cursor-pointer" style="cursor:pointer;">
+          <input type="radio" name="objective" value="minimum_water" style="margin-top:4px; accent-color:var(--color-primary);">
+          <div>
+            <div class="font-bold text-primary">Minimum Water Usage</div>
+            <div class="text-xs text-secondary">Optimizes for ultra-low water footprints and closed-loop recyclability.</div>
+          </div>
+        </label>
+
+        <label class="glass-card p-4 flex items-start gap-3 cursor-pointer" style="cursor:pointer;">
+          <input type="radio" name="objective" value="fastest_harvest" style="margin-top:4px; accent-color:var(--color-primary);">
+          <div>
+            <div class="font-bold text-primary">Fastest Harvest Cycles</div>
+            <div class="text-xs text-secondary">Prioritizes rapid crop turnaround (7 to 21 days) for continuous cash flow.</div>
+          </div>
+        </label>
+
+        <label class="glass-card p-4 flex items-start gap-3 cursor-pointer" style="cursor:pointer;">
+          <input type="radio" name="objective" value="nutritional_objective" style="margin-top:4px; accent-color:var(--color-primary);">
+          <div>
+            <div class="font-bold text-primary">Nutritional & Superfood Focus</div>
+            <div class="text-xs text-secondary">Emphasizes protein density, vitamins, and functional food value.</div>
+          </div>
+        </label>
+
+        <label class="glass-card p-4 flex items-start gap-3 cursor-pointer" style="cursor:pointer;">
+          <input type="radio" name="objective" value="let_ai_decide" style="margin-top:4px; accent-color:var(--color-primary);">
+          <div>
+            <div class="font-bold text-primary">Let AI Decide (Balanced)</div>
+            <div class="text-xs text-secondary">Equally balances climate, economics, resource efficiency, and operational risk.</div>
+          </div>
+        </label>
+      </div>
+
+      <div class="flex justify-between">
+        <button type="button" class="glass-btn" onclick="prevStep(4)">Back</button>
+        <button type="button" class="glass-btn glass-btn-primary glass-btn-lg" id="btn-run-ai" onclick="executeRecommendation()">
+          <i data-lucide="sparkles" style="width:18px; height:18px;"></i>
+          Run AI Recommendation Engine
+        </button>
+      </div>
+    </div>
+
+    <!-- WIZARD STEP 5: AI Recommendation Results -->
+    <div class="glass-card p-8 wizard-step" id="step-5" style="display:none;">
+      <div id="ai-loading" class="loading-state">
+        <div class="spinner"></div>
+        <div class="text-lg font-bold text-primary">Executing Two-Layer AI Engine…</div>
+        <p class="text-xs text-muted">Running Layer 1 Feasibility Checks & Layer 2 Suitability Optimization…</p>
+      </div>
+
+      <div id="ai-results-content" style="display:none;">
+        <div class="page-header mb-6">
+          <div class="page-header-row">
+            <div>
+              <div class="glass-badge badge-primary mb-2">AI Recommendation Complete</div>
+              <h2 class="text-2xl font-bold" id="results-title">Optimal Cultivation Choice</h2>
+              <p class="text-sm text-secondary" id="results-subtitle">Evaluated across Hydroponics, Algaculture, and Fungi ecosystems.</p>
+            </div>
+            <a id="btn-go-project" href="#" class="glass-btn glass-btn-primary glass-btn-lg">
+              Manage Project <i data-lucide="arrow-right" style="width:16px; height:16px;"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Top Recommendation Banner Card -->
+        <div class="glass-card recommendation-card top-pick p-6 mb-8" id="top-pick-card">
+          <div class="flex items-center justify-between flex-wrap gap-4">
+            <div class="flex items-center gap-4">
+              <div class="rec-method-icon">🌱</div>
+              <div>
+                <span class="glass-badge badge-success mb-1">Rank #1 Recommended</span>
+                <h3 class="rec-product-name text-2xl" id="top-product-name">Spirulina</h3>
+                <div class="rec-method-name" id="top-method-name">Algaculture / Microalgae</div>
+              </div>
+            </div>
+
+            <!-- Score Ring -->
+            <div class="flex items-center gap-6">
+              <div class="text-center">
+                <div class="text-3xl font-extrabold text-green" id="top-score-val">94.2%</div>
+                <div class="text-xs text-muted">Suitability Score</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Economics Grid -->
+          <div class="grid grid-4 mt-6 pt-6" style="border-top:1px solid rgba(255,255,255,0.1);">
+            <div>
+              <div class="text-xs text-muted">Est. Annual Yield</div>
+              <div class="text-lg font-bold text-primary" id="top-yield">-- kg</div>
+            </div>
+            <div>
+              <div class="text-xs text-muted">Est. Annual Revenue</div>
+              <div class="text-lg font-bold text-green" id="top-revenue">₹ --</div>
+            </div>
+            <div>
+              <div class="text-xs text-muted">Est. Annual Profit</div>
+              <div class="text-lg font-bold text-cyan" id="top-profit">₹ --</div>
+            </div>
+            <div>
+              <div class="text-xs text-muted">Est. Annual ROI</div>
+              <div class="text-lg font-bold text-warning" id="top-roi">-- %</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feature Contributions & Why This -->
+        <div class="grid grid-2 gap-6 mb-8">
+          <div class="glass-card p-6">
+            <h3 class="text-base font-bold mb-4 flex items-center gap-2">
+              <i data-lucide="help-circle" style="color:var(--color-primary); width:18px; height:18px;"></i>
+              Why This Product Was Selected
+            </h3>
+            <div id="why-this-list" class="flex flex-col gap-3 text-xs">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <div class="glass-card p-6">
+            <h3 class="text-base font-bold mb-4 flex items-center gap-2">
+              <i data-lucide="sliders" style="color:var(--color-accent); width:18px; height:18px;"></i>
+              Factor Suitability Breakdown
+            </h3>
+            <div style="height: 220px;">
+              <canvas id="factor-chart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Why Not That / Comparisons -->
+        <div class="glass-card p-6 mb-8">
+          <h3 class="text-base font-bold mb-4 flex items-center gap-2">
+            <i data-lucide="git-compare" style="color:#fcd34d; width:18px; height:18px;"></i>
+            Why Not That? (Side-by-Side Comparison)
+          </h3>
+          <div id="comparisons-list" class="flex flex-col gap-3 text-xs">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Full Ranked Candidates Table -->
+        <div class="glass-card p-6">
+          <h3 class="text-base font-bold mb-4">All Evaluated Candidates (Ranked)</h3>
+          <div class="glass-table-wrap">
+            <table class="glass-table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Product</th>
+                  <th>Ecosystem</th>
+                  <th>Feasibility</th>
+                  <th>Suitability</th>
+                  <th>Est. Profit/Yr</th>
+                  <th>ROI</th>
+                </tr>
+              </thead>
+              <tbody id="candidates-table-body">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="../../js/config.js?v=3.2.0"></script>
+  <script src="../../js/api.js?v=3.2.0"></script>
+  <script src="../../js/auth.js?v=3.2.0"></script>
+  <script src="../../js/interactive-bg.js?v=3.2.0"></script>
+  <script src="../../js/navigation.js?v=3.2.0"></script>
+  <script>
+    lucide.createIcons();
+    AuthGuard.requireAuth(['general_user', 'admin']);
+
+    let currentStep = 1;
+    let createdProjectId = null;
+    let resolvedLocationData = null;
+    let factorChartInstance = null;
+
+    function nextStep(step) {
+      if (step === 1) {
+        const name = document.getElementById('proj-name').value.trim();
+        if (!name) {
+          alert('Please enter a project name.');
+          return;
+        }
+      }
+
+      document.getElementById(`step-${step}`).style.display = 'none';
+      document.getElementById(`step-ind-${step}`).classList.remove('active');
+      document.getElementById(`step-ind-${step}`).classList.add('complete');
+
+      currentStep = step + 1;
+      document.getElementById(`step-${currentStep}`).style.display = 'block';
+      document.getElementById(`step-ind-${currentStep}`).classList.add('active');
+      lucide.createIcons();
+    }
+
+    function prevStep(step) {
+      document.getElementById(`step-${step}`).style.display = 'none';
+      document.getElementById(`step-ind-${step}`).classList.remove('active');
+
+      currentStep = step - 1;
+      document.getElementById(`step-${currentStep}`).style.display = 'block';
+      document.getElementById(`step-ind-${currentStep}`).classList.add('active');
+      document.getElementById(`step-ind-${currentStep}`).classList.remove('complete');
+      lucide.createIcons();
+    }
+
+    async function resolveLocation() {
+      const q = document.getElementById('loc-query').value.trim();
+      if (!q) return;
+
+      const btn = document.getElementById('btn-resolve-loc');
+      btn.disabled = true;
+      btn.textContent = 'Resolving…';
+
+      try {
+        const res = await AgriAPI.location.geocode(q);
+        if (res.success && res.data.found) {
+          resolvedLocationData = res.data;
+          document.getElementById('loc-resolved-name').textContent = res.data.display_name;
+
+          // Fetch weather preview
+          const wRes = await AgriAPI.get(`/weather/coordinates?lat=${res.data.latitude}&lon=${res.data.longitude}`);
+          if (wRes.success && wRes.data.current) {
+            document.getElementById('weather-temp').textContent = `${wRes.data.current.temperature_c} °C`;
+            document.getElementById('weather-humidity').textContent = `${wRes.data.current.humidity_pct} %`;
+            document.getElementById('weather-solar').textContent = wRes.data.climate_profile.solar_potential || 'High';
+          }
+
+          document.getElementById('weather-preview-box').style.display = 'block';
+          lucide.createIcons();
+        } else {
+          alert('Location could not be found. Please try another city.');
+        }
+      } catch (err) {
+        alert('Geocoding error: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="search" style="width:16px; height:16px;"></i> Resolve';
+        lucide.createIcons();
+      }
+    }
+
+    async function executeRecommendation() {
+      // 1. Switch to Step 5
+      nextStep(4);
+      document.getElementById('ai-loading').style.display = 'flex';
+      document.getElementById('ai-results-content').style.display = 'none';
+
+      try {
+        // Create project in DB
+        const projName = document.getElementById('proj-name').value.trim();
+        const projDesc = document.getElementById('proj-desc').value.trim();
+        const pRes = await AgriAPI.projects.create({ name: projName, description: projDesc });
+        createdProjectId = pRes.data.id;
+
+        // Set location
+        const locQuery = document.getElementById('loc-query').value.trim();
+        await AgriAPI.location.setProjectLocation(createdProjectId, {
+          raw_input: locQuery,
+          latitude: resolvedLocationData ? resolvedLocationData.latitude : 12.9716,
+          longitude: resolvedLocationData ? resolvedLocationData.longitude : 77.5946,
+          city: resolvedLocationData ? resolvedLocationData.city : 'Bengaluru',
+          state: resolvedLocationData ? resolvedLocationData.state : 'Karnataka',
+          country: resolvedLocationData ? resolvedLocationData.country : 'India',
+        });
+
+        // Run Recommendation
+        const objType = document.querySelector('input[name="objective"]:checked').value;
+        const areaSqm = parseFloat(document.getElementById('res-area').value);
+        const areaType = document.getElementById('res-area-type').value;
+        const capitalInr = parseFloat(document.getElementById('res-capital').value);
+        const waterLitres = parseFloat(document.getElementById('res-water').value);
+        const workers = parseInt(document.getElementById('res-manpower').value);
+
+        const recRes = await AgriAPI.recommendations.run(createdProjectId, {
+          objective_type: objType,
+          available_area_sqm: areaSqm,
+          area_type: areaType,
+          available_capital_inr: capitalInr,
+          water_available_litres_day: waterLitres,
+          manpower_workers: workers,
+        });
+
+        if (recRes.success) {
+          renderResults(recRes.data);
+        } else {
+          throw new Error(recRes.error || 'Recommendation failed');
+        }
+
+      } catch (err) {
+        alert('Error during AI execution: ' + err.message);
+      } finally {
+        document.getElementById('ai-loading').style.display = 'none';
+      }
+    }
+
+    function formatDecisionDriverExplanation(text, isPositive) {
+      if (!text) return '';
+      const str = String(text).trim();
+
+      let sentences = [];
+      if (str.includes(';') || str.includes('•') || str.includes('·')) {
+        sentences = str.split(/[;•·]+/).map(s => s.trim()).filter(Boolean);
+      } else if (/\.\s+[A-Z0-9₹<]/.test(str)) {
+        sentences = str.split(/\.\s+(?=[A-Z0-9₹<])/).map(s => s.trim().replace(/\.$/, '')).filter(Boolean);
+      } else {
+        sentences = [str];
+      }
+
+      if (sentences.length === 1 && sentences[0].includes('. ') && sentences[0].length > 40) {
+        sentences = sentences[0].split(/\.\s+/).map(s => s.trim().replace(/\.$/, '')).filter(Boolean);
+      }
+
+      const iconColor = isPositive ? '#10B981' : '#F59E0B';
+      const iconName = isPositive ? 'check-circle-2' : 'alert-circle';
+
+      return `
+        <div class="space-y-2 mt-2.5 pl-0.5">
+          ${sentences.map(sent => `
+            <div class="flex items-start gap-2.5 text-sm md:text-base text-primary font-medium leading-relaxed">
+              <i data-lucide="${iconName}" style="width: 17px; height: 17px; color: ${iconColor}; margin-top: 3px; flex-shrink: 0;"></i>
+              <span class="flex-1">${sent}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function renderResults(data) {
+      document.getElementById('ai-results-content').style.display = 'block';
+      document.getElementById('btn-go-project').href = `project-detail.html?id=${createdProjectId}`;
+
+      const top = data.top_pick;
+      document.getElementById('top-product-name').textContent = top.product_name;
+      document.getElementById('top-method-name').textContent = `${top.method_display} (${top.scientific_name || ''})`;
+      document.getElementById('top-score-val').textContent = `${top.suitability_score}%`;
+
+      document.getElementById('top-yield').textContent = `${top.estimated_yield_kg.toLocaleString()} kg`;
+      document.getElementById('top-revenue').textContent = `₹ ${top.estimated_revenue_inr.toLocaleString()}`;
+      document.getElementById('top-profit').textContent = `₹ ${top.estimated_profit_inr.toLocaleString()}`;
+      document.getElementById('top-roi').textContent = `${top.estimated_roi_pct}%`;
+
+      // Render Why This list
+      const whyList = document.getElementById('why-this-list');
+      whyList.innerHTML = top.feature_importance.map(fi => {
+        const isPos = fi.direction === 'positive' || fi.direction > 0;
+        return `
+          <div class="glass-panel p-4 md:p-5" style="border-radius:12px; background: rgba(255,255,255,0.035); border: 1.5px solid ${isPos ? 'rgba(16, 185, 129, 0.28)' : 'rgba(245, 158, 11, 0.28)'};">
+            <div class="flex items-center justify-between gap-3 pb-2 flex-wrap" style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+              <div class="flex items-center gap-2.5">
+                <span class="w-3 h-3 rounded-full flex-shrink-0" style="background: ${isPos ? '#10B981' : '#F59E0B'}; box-shadow: 0 0 10px ${isPos ? '#10B981' : '#F59E0B'};"></span>
+                <span class="font-bold text-primary text-base md:text-lg">${fi.feature_name}</span>
+              </div>
+              <span class="glass-badge ${isPos ? 'badge-success' : 'badge-warning'} text-xs md:text-sm font-bold px-3 py-1">
+                ${isPos ? '+ Positive Key Driver' : '- Constraint / Consideration'}
+              </span>
+            </div>
+            ${formatDecisionDriverExplanation(fi.human_explanation, isPos)}
+          </div>
+        `;
+      }).join('');
+
+      // Render Radar / Bar Chart for factor scores
+      renderFactorChart(top.component_scores);
+
+      // Render Why Not That comparisons
+      const compList = document.getElementById('comparisons-list');
+      compList.innerHTML = data.comparisons.map(c => `
+        <div class="glass-panel p-3" style="border-radius:8px;">
+          <div class="font-bold text-primary mb-1">${c.top_product} vs ${c.alternative_product} (+${c.score_difference} pts)</div>
+          <div class="text-secondary">${c.summary}</div>
+        </div>
+      `).join('');
+
+      // Render Candidates Table
+      const tbody = document.getElementById('candidates-table-body');
+      tbody.innerHTML = data.all_results.map(r => `
+        <tr>
+          <td><span class="font-bold">${r.rank}</span></td>
+          <td class="font-semibold">${r.product_name}</td>
+          <td>${r.method_display}</td>
+          <td><span class="glass-badge ${r.feasible ? 'badge-success' : 'badge-danger'}">${r.feasible ? 'Feasible' : 'Infeasible'}</span></td>
+          <td class="font-bold text-green">${r.suitability_score}%</td>
+          <td>₹ ${r.estimated_profit_inr.toLocaleString()}</td>
+          <td>${r.estimated_roi_pct}%</td>
+        </tr>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    function renderFactorChart(scores) {
+      const ctx = document.getElementById('factor-chart').getContext('2d');
+      if (factorChartInstance) factorChartInstance.destroy();
+
+      const labels = ['Weather', 'Water', 'Capital', 'Area', 'Labor', 'Yield', 'Economics', 'Nutrition', 'Risk'];
+      const dataVals = [
+        scores.weather || 75, scores.water || 75, scores.investment || 75,
+        scores.area || 75, scores.labor || 75, scores.yield || 75,
+        scores.economics || 75, scores.nutrition || 75, scores.risk || 75
+      ];
+
+      factorChartInstance = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Factor Score',
+            data: dataVals,
+            backgroundColor: 'rgba(34, 197, 94, 0.25)',
+            borderColor: 'rgba(34, 197, 94, 0.9)',
+            pointBackgroundColor: '#22c55e',
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            r: {
+              suggestedMin: 30,
+              suggestedMax: 100,
+              ticks: { display: false },
+              grid: { color: 'rgba(255,255,255,0.1)' },
+              pointLabels: { color: 'rgba(255,255,255,0.7)', font: { size: 10 } }
+            }
+          },
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

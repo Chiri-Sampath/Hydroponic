@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Producer Dashboard — AgriSmart AI</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <!-- AgriSmart AI CSS -->
+  <link rel="stylesheet" href="../../css/variables.css?v=3.2.0">
+  <link rel="stylesheet" href="../../css/glass.css?v=3.2.0">
+  <link rel="stylesheet" href="../../css/layout.css?v=3.2.0">
+  <link rel="stylesheet" href="../../css/responsive.css?v=3.2.0">
+  <style>
+    .section-tab-nav {
+      display: flex;
+      gap: var(--space-2);
+      border-bottom: 1px solid var(--glass-border);
+      margin-bottom: var(--space-6);
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+    .section-nav-btn {
+      padding: 10px 18px;
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all var(--transition-fast);
+      white-space: nowrap;
+    }
+    .section-nav-btn:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.70);
+      border-radius: var(--glass-radius-sm) var(--glass-radius-sm) 0 0;
+    }
+    .section-nav-btn.active {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+      font-weight: 700;
+    }
+    .dashboard-view-section {
+      display: none;
+    }
+    .dashboard-view-section.active {
+      display: block;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .market-crop-card {
+      transition: transform var(--transition-fast), border-color var(--transition-fast);
+    }
+    .market-crop-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(37, 99, 235, 0.40);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Glass Navbar -->
+  <nav class="glass-navbar">
+    <button class="navbar-toggle" aria-label="Toggle Navigation Menu">
+      <div class="navbar-toggle-icon">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </button>
+
+    <a href="../../index.html" class="navbar-brand">
+      <div class="navbar-logo">🌱</div>
+      <div class="navbar-brand-text">Agri<span>Smart AI</span></div>
+    </a>
+
+    <div class="navbar-spacer"></div>
+
+    <div class="flex items-center gap-3">
+      <!-- Account Menu Dropdown Container -->
+      <div class="account-menu-container" style="position: relative;">
+        <button id="btn-user-account-menu" class="navbar-user-btn" style="border: 1.5px solid rgba(255,255,255,0.85); background: rgba(255,255,255,0.85); cursor: pointer;" aria-haspopup="true" aria-expanded="false">
+          <div class="navbar-avatar user-avatar-initial" style="background: var(--color-primary); color: #FFF;">U</div>
+          <span class="user-display-name font-medium">Producer</span>
+          <span class="glass-badge badge-primary user-role-badge">General User</span>
+          <i data-lucide="chevron-down" style="width: 14px; height: 14px; color: #64748B;"></i>
+        </button>
+
+        <!-- User Account Dropdown Menu -->
+        <div id="user-account-dropdown-menu" class="account-dropdown" style="position: absolute; top: calc(100% + 10px); right: 0; width: 270px; background: rgba(255, 255, 255, 0.98); border: 1.5px solid rgba(255, 255, 255, 0.95); border-radius: 16px; backdrop-filter: blur(24px); box-shadow: 0 18px 45px rgba(15, 23, 42, 0.15); padding: 8px; z-index: 1000;">
+          <div class="account-dropdown-header" style="padding: 10px 12px; border-bottom: 1px solid #E2E8F0; margin-bottom: 6px;">
+            <div class="font-bold text-sm user-display-name" style="color: #0F172A;">Producer</div>
+            <div class="text-xs text-muted user-display-email">user@agrismart.local</div>
+          </div>
+
+          <!-- Switch to Admin Option (Strictly visible only for active Admins) -->
+          <div id="admin-switch-option-container" style="display: none;">
+            <a href="../admin/dashboard.html" class="account-dropdown-item font-semibold" style="background: #FEF2F2; border: 1px solid #FECACA; color: #DC2626; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; border-radius: 10px; text-decoration: none; font-size: 13px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="repeat" style="width: 15px; height: 15px; color: #DC2626;"></i>
+                <span>Switch to Admin Console</span>
+              </div>
+              <span class="glass-badge badge-danger" style="font-size: 10px; padding: 2px 6px;">Admin Mode</span>
+            </a>
+            <div class="account-dropdown-divider" style="height: 1px; background: #E2E8F0; margin: 6px 0;"></div>
+          </div>
+
+          <a href="cultivation-kb.html" class="account-dropdown-item" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; color: #1E293B; font-size: 13px; font-weight: 600; text-decoration: none;">
+            <i data-lucide="book-open" style="width: 15px; height: 15px; color: #10B981;"></i>
+            Cultivation Knowledge Base
+          </a>
+          <a href="create-project.html" class="account-dropdown-item" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; color: #1E293B; font-size: 13px; font-weight: 600; text-decoration: none;">
+            <i data-lucide="plus-circle" style="width: 15px; height: 15px; color: #3B82F6;"></i>
+            New Cultivation Wizard
+          </a>
+
+          <div class="account-dropdown-divider" style="height: 1px; background: #E2E8F0; margin: 6px 0;"></div>
+
+          <button class="account-dropdown-item btn-logout" style="color: #DC2626; width: 100%; display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; font-size: 13px; font-weight: 600; background: transparent; border: none; cursor: pointer;">
+            <i data-lucide="log-out" style="width: 15px; height: 15px;"></i>
+            Sign Out
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Glass Sidebar -->
+  <aside class="glass-sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Main</div>
+      <a href="javascript:void(0)" class="sidebar-nav-item active" id="side-nav-projects" onclick="switchSection('projects')">
+        <i data-lucide="layout-dashboard" class="nav-icon"></i>
+        <span>Projects & Dashboard</span>
+      </a>
+      <a href="create-project.html" class="sidebar-nav-item">
+        <i data-lucide="plus-circle" class="nav-icon"></i>
+        <span>New Project / AI Wizard</span>
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Operations & Quality</div>
+      <a href="javascript:void(0)" class="sidebar-nav-item" id="side-nav-passports" onclick="switchSection('passports')">
+        <i data-lucide="shield-check" class="nav-icon"></i>
+        <span>Quality Assurance</span>
+      </a>
+      <a href="javascript:void(0)" class="sidebar-nav-item" id="side-nav-market" onclick="switchSection('market')">
+        <i data-lucide="trending-up" class="nav-icon"></i>
+        <span>Market Intelligence</span>
+      </a>
+      <a href="javascript:void(0)" class="sidebar-nav-item" id="side-nav-labs" onclick="switchSection('labs')">
+        <i data-lucide="flask-conical" class="nav-icon"></i>
+        <span>Lab Directory</span>
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Knowledge & Commerce</div>
+      <a href="cultivation-kb.html" class="sidebar-nav-item">
+        <i data-lucide="book-open" class="nav-icon"></i>
+        <span>Cultivation Knowledge Base</span>
+      </a>
+      <a href="../buyer/dashboard.html" class="sidebar-nav-item">
+        <i data-lucide="shopping-bag" class="nav-icon"></i>
+        <span>Buyer Marketplace</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-header-row">
+        <div>
+          <h1 class="page-title">Producer Intelligence Dashboard</h1>
+          <p class="page-subtitle">Manage CEA facilities, execute AI crop suitability models, track lab-tested quality assurance reports, and inspect market prices.</p>
+        </div>
+        <div class="flex gap-2">
+          <a href="create-project.html" class="glass-btn glass-btn-primary glass-btn-lg">
+            <i data-lucide="sparkles" style="width: 18px; height: 18px;"></i>
+            New Cultivation Project
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Metrics Strip -->
+    <div class="grid grid-4 mb-8">
+      <div class="glass-card metric-card" style="cursor: pointer;" onclick="switchSection('projects')">
+        <span class="metric-card-label">Active Projects</span>
+        <div class="metric-card-value text-green" id="metric-projects-count">0</div>
+        <span class="metric-card-trend">Hydroponics · Algae · Fungi</span>
+      </div>
+
+      <div class="glass-card metric-card" style="cursor: pointer;" onclick="switchSection('projects')">
+        <span class="metric-card-label">AI Recommendations</span>
+        <div class="metric-card-value text-lime" id="metric-runs-count">0</div>
+        <span class="metric-card-trend">Two-layer suitability runs</span>
+      </div>
+
+      <div class="glass-card metric-card" style="cursor: pointer;" onclick="switchSection('passports')">
+        <span class="metric-card-label">Quality Assurance</span>
+        <div class="metric-card-value text-gold" id="metric-passports-count">0</div>
+        <span class="metric-card-trend">QR-verified QA batches</span>
+      </div>
+
+      <div class="glass-card metric-card" style="cursor: pointer;" onclick="switchSection('labs')">
+        <span class="metric-card-label">Accredited Labs</span>
+        <div class="metric-card-value text-gold" id="metric-labs-count">3</div>
+        <span class="metric-card-trend">NABL / FSSAI verified</span>
+      </div>
+    </div>
+
+    <!-- Section Navigation Tabs -->
+    <div class="section-tab-nav">
+      <button class="section-nav-btn active" id="tab-btn-projects" onclick="switchSection('projects')">
+        <i data-lucide="sprout" style="width:16px; height:16px;"></i> Cultivation Projects
+      </button>
+      <button class="section-nav-btn" id="tab-btn-passports" onclick="switchSection('passports')">
+        <i data-lucide="shield-check" style="width:16px; height:16px;"></i> Quality Assurance
+      </button>
+      <button class="section-nav-btn" id="tab-btn-market" onclick="switchSection('market')">
+        <i data-lucide="trending-up" style="width:16px; height:16px;"></i> Market Intelligence
+      </button>
+      <button class="section-nav-btn" id="tab-btn-labs" onclick="switchSection('labs')">
+        <i data-lucide="flask-conical" style="width:16px; height:16px;"></i> Lab Directory
+      </button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- VIEW SECTION 1: Cultivation Projects                                   -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <div class="dashboard-view-section active" id="section-projects">
+      <div class="glass-card p-6 mb-8">
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+          <div>
+            <h2 class="text-xl font-bold">Your Cultivation Projects</h2>
+            <p class="text-xs text-muted">Each project binds specific GPS location, microclimate weather, facility area, and AI crop recommendations.</p>
+          </div>
+          <a href="create-project.html" class="glass-btn glass-btn-primary glass-btn-sm">
+            <i data-lucide="plus" style="width: 14px; height: 14px;"></i> Add Project
+          </a>
+        </div>
+
+        <!-- Projects Container -->
+        <div id="projects-list-container">
+          <div class="loading-state">
+            <div class="spinner"></div>
+            <div>Loading your cultivation projects…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- VIEW SECTION 2: Quality Assurance & Lab Verifications                  -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <div class="dashboard-view-section" id="section-passports">
+      <div class="glass-card p-6 mb-8">
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+          <div>
+            <h2 class="text-xl font-bold">Quality Assurance & Lab Verifications</h2>
+            <p class="text-xs text-muted">Cryptographically verified crop batch certificates with automated OCR lab result ingestion and public QR code proof.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <a href="quality-passport.html?token=demo" target="_blank" class="glass-btn glass-btn-sm">
+              <i data-lucide="external-link" style="width:14px; height:14px;"></i> Preview Sample QA Certificate
+            </a>
+          </div>
+        </div>
+
+        <!-- QA Verification Quick Search Box -->
+        <div class="glass-panel p-4 mb-6 flex items-center justify-between flex-wrap gap-4" style="background: rgba(255,255,255,0.03); border-radius: var(--radius-md);">
+          <div class="flex items-center gap-3 flex-1 min-w-[280px]">
+            <i data-lucide="search" style="color:var(--color-primary); width:18px; height:18px;"></i>
+            <input type="text" id="verify-token-input" class="glass-input" placeholder="Enter share token or batch code to verify..." style="max-width: 400px;">
+            <button class="glass-btn glass-btn-primary glass-btn-sm" onclick="verifyTokenDirect()">
+              Verify Token
+            </button>
+          </div>
+          <span class="text-xs text-muted">FSSAI & NABL Compliant Standard Format</span>
+        </div>
+
+        <!-- Passports Container -->
+        <div id="passports-list-container">
+          <div class="loading-state">
+            <div class="spinner"></div>
+            <div>Loading quality assurance records…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- VIEW SECTION 3: Market Intelligence & Price Benchmarks                 -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <div class="dashboard-view-section" id="section-market">
+      <div class="glass-card p-6 mb-8">
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+          <div>
+            <h2 class="text-xl font-bold">CEA Market Intelligence & Price Benchmarks</h2>
+            <p class="text-xs text-muted">Date-stamped commodity price ranges, commercial sales channel spreads, packaging standards, and buyer demand trends.</p>
+          </div>
+          <div class="glass-input-icon-wrap" style="width: 260px;">
+            <i data-lucide="search" class="glass-input-icon"></i>
+            <input type="text" id="market-search" class="glass-input" placeholder="Search crop market..." oninput="filterMarketData()">
+          </div>
+        </div>
+
+        <!-- Market Ecosystem Filters -->
+        <div class="flex gap-2 mb-6 flex-wrap" id="market-filter-buttons">
+          <button class="glass-btn glass-btn-primary glass-btn-sm" onclick="filterMarketEcosystem('all', this)">All Commodities (18)</button>
+          <button class="glass-btn glass-btn-sm" onclick="filterMarketEcosystem('hydroponics', this)">Hydroponics</button>
+          <button class="glass-btn glass-btn-sm" onclick="filterMarketEcosystem('algaculture', this)">Algaculture</button>
+          <button class="glass-btn glass-btn-sm" onclick="filterMarketEcosystem('fungi', this)">Fungi / Mushrooms</button>
+        </div>
+
+        <!-- Market Grid Container -->
+        <div class="grid grid-3 gap-6" id="market-grid-container">
+          <div class="loading-state">
+            <div class="spinner"></div>
+            <div>Loading market intelligence benchmarks…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- VIEW SECTION 4: Accredited Lab Directory                               -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <div class="dashboard-view-section" id="section-labs">
+      <div class="glass-card p-6 mb-8">
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+          <div>
+            <h2 class="text-xl font-bold">Accredited Food Safety & CEA Testing Laboratories</h2>
+            <p class="text-xs text-muted">NABL & FSSAI certified analytical laboratories for pesticide residue, heavy metal screening, pathogens, and nutrient assays.</p>
+          </div>
+          <div class="flex items-center gap-3 flex-wrap">
+            <div class="glass-input-icon-wrap" style="width: 240px;">
+              <i data-lucide="map-pin" class="glass-input-icon"></i>
+              <input type="text" id="lab-city-search" class="glass-input" placeholder="Filter by City (e.g. Bengaluru, Pune)..." oninput="filterLabs()">
+            </div>
+            <label class="flex items-center gap-2 text-xs text-muted font-medium cursor-pointer">
+              <input type="checkbox" id="lab-accredited-only" onchange="filterLabs()" checked>
+              <span>Accredited Only</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Labs Grid Container -->
+        <div class="grid grid-3 gap-6" id="labs-grid-container">
+          <div class="loading-state">
+            <div class="spinner"></div>
+            <div>Loading certified laboratories…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- MODAL: Edit Project                                                    -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="glass-modal-overlay" id="modal-edit-project">
+    <div class="glass-modal" style="max-width: 520px; width: 95%;">
+      <div class="glass-modal-header">
+        <h3 class="glass-modal-title flex items-center gap-2">
+          <i data-lucide="edit-3" style="color:var(--color-primary); width:18px; height:18px;"></i>
+          Edit Cultivation Project
+        </h3>
+        <button class="glass-modal-close" onclick="closeEditModal()"><i data-lucide="x"></i></button>
+      </div>
+      <div class="glass-modal-body">
+        <input type="hidden" id="edit-project-id">
+        <div class="glass-input-group mb-4">
+          <label class="glass-label">Project Facility Name</label>
+          <input type="text" id="edit-project-name" class="glass-input" placeholder="e.g. GreenRoots Polyhouse Farm #1" required>
+        </div>
+        <div class="glass-input-group mb-4">
+          <label class="glass-label">Description / Notes</label>
+          <textarea id="edit-project-desc" class="glass-textarea" rows="3" placeholder="Facility notes, objectives, or operational parameters..."></textarea>
+        </div>
+      </div>
+      <div class="glass-modal-footer">
+        <button class="glass-btn" onclick="closeEditModal()">Cancel</button>
+        <button class="glass-btn glass-btn-primary" id="btn-save-project" onclick="saveProjectEdit()">
+          <i data-lucide="check" style="width:14px; height:14px;"></i> Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- MODAL: Delete Project Confirmation                                     -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="glass-modal-overlay" id="modal-delete-project">
+    <div class="glass-modal" style="max-width: 460px; width: 95%;">
+      <div class="glass-modal-header">
+        <h3 class="glass-modal-title text-danger flex items-center gap-2">
+          <i data-lucide="alert-triangle" style="color:#ef4444; width:20px; height:20px;"></i>
+          Delete Cultivation Project
+        </h3>
+        <button class="glass-modal-close" onclick="closeDeleteModal()"><i data-lucide="x"></i></button>
+      </div>
+      <div class="glass-modal-body">
+        <input type="hidden" id="delete-project-id">
+        <p class="text-sm mb-3">Are you sure you want to delete <strong id="delete-project-name-display" class="text-primary">this project</strong>?</p>
+        <p class="text-xs text-muted">This will archive the project, location climate bindings, and associated recommendation runs from your active dashboard.</p>
+      </div>
+      <div class="glass-modal-footer">
+        <button class="glass-btn" onclick="closeDeleteModal()">Cancel</button>
+        <button class="glass-btn glass-btn-danger" id="btn-confirm-delete" onclick="executeDeleteProject()">
+          <i data-lucide="trash-2" style="width:14px; height:14px;"></i> Delete Project
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- MODAL: Market Intelligence Deep Dive                                   -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="glass-modal-overlay" id="modal-market-detail" style="align-items: flex-start; padding-top: 40px; overflow-y: auto;">
+    <div class="glass-modal" style="max-width: 780px; width: 95%; max-height: 90vh; overflow-y: auto;">
+      <div class="glass-modal-header">
+        <div>
+          <h3 class="glass-modal-title text-2xl font-extrabold text-primary" id="market-modal-title">Market Intelligence</h3>
+          <p class="text-xs text-muted" id="market-modal-subtitle">Commodity economics & supply chain specifications</p>
+        </div>
+        <button class="glass-modal-close" onclick="closeMarketModal()"><i data-lucide="x"></i></button>
+      </div>
+      <div class="glass-modal-body" id="market-modal-body">
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <div>Loading detailed market telemetry…</div>
+        </div>
+      </div>
+      <div class="glass-modal-footer">
+        <button class="glass-btn" onclick="closeMarketModal()">Close</button>
+        <a href="cultivation-kb.html" class="glass-btn glass-btn-primary">
+          <i data-lucide="book-open" style="width:14px; height:14px;"></i> View Full Agronomic Profile
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- MODAL: Lab Booking & Details                                           -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="glass-modal-overlay" id="modal-lab-detail">
+    <div class="glass-modal" style="max-width: 580px; width: 95%;">
+      <div class="glass-modal-header">
+        <div>
+          <h3 class="glass-modal-title text-xl font-bold text-primary" id="lab-modal-name">Laboratory Details</h3>
+          <p class="text-xs text-muted" id="lab-modal-accred">NABL (ISO/IEC 17025) Verified</p>
+        </div>
+        <button class="glass-modal-close" onclick="closeLabModal()"><i data-lucide="x"></i></button>
+      </div>
+      <div class="glass-modal-body" id="lab-modal-body">
+        <!-- Populated by JS -->
+      </div>
+      <div class="glass-modal-footer">
+        <button class="glass-btn" onclick="closeLabModal()">Close</button>
+        <a id="lab-modal-call-btn" href="#" class="glass-btn glass-btn-primary">
+          <i data-lucide="phone" style="width:14px; height:14px;"></i> Contact Laboratory
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../js/config.js?v=3.2.0"></script>
+  <script src="../../js/api.js?v=3.2.0"></script>
+  <script src="../../js/auth.js?v=3.2.0"></script>
+  <script src="../../js/interactive-bg.js?v=3.2.0"></script>
+  <script src="../../js/navigation.js?v=3.2.0"></script>
+  <script>
+    lucide.createIcons();
+
+    let allUserProjects = [];
+    let allMarketData = [];
+    let currentMarketFilter = 'all';
+    let allLabsData = [];
+
+    // Enforce auth
+    if (AuthGuard.requireAuth(['general_user', 'admin'])) {
+      AuthGuard.initUserNavbar();
+      initDashboard();
+    }
+
+    async function initDashboard() {
+      await loadProjects();
+      loadQualityPassports();
+      loadMarketIntelligence();
+      loadLabDirectory();
+    }
+
+    // ── SECTION TAB SWITCHER ──────────────────────────────────────────
+    function switchSection(sectionId) {
+      // Hide all sections
+      document.querySelectorAll('.dashboard-view-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.section-nav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.glass-sidebar .sidebar-nav-item').forEach(i => i.classList.remove('active'));
+
+      // Show selected
+      const targetSec = document.getElementById(`section-${sectionId}`);
+      if (targetSec) targetSec.classList.add('active');
+
+      const targetTabBtn = document.getElementById(`tab-btn-${sectionId}`);
+      if (targetTabBtn) targetTabBtn.classList.add('active');
+
+      const targetSideBtn = document.getElementById(`side-nav-${sectionId}`);
+      if (targetSideBtn) targetSideBtn.classList.add('active');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ── SECTION 1: PROJECTS MANAGEMENT ─────────────────────────────────
+    async function loadProjects() {
+      const container = document.getElementById('projects-list-container');
+      try {
+        const res = await AgriAPI.projects.list();
+        allUserProjects = res.data || [];
+
+        document.getElementById('metric-projects-count').textContent = allUserProjects.length;
+
+        if (allUserProjects.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">🌱</div>
+              <div class="empty-state-title">No Active Projects Created Yet</div>
+              <p class="empty-state-desc">Create your first cultivation project to get automated weather analysis, AI crop recommendations, and financial forecasts.</p>
+              <a href="create-project.html" class="glass-btn glass-btn-primary mt-4">
+                <i data-lucide="play" style="width:16px; height:16px;"></i> Launch AI Recommendation Wizard
+              </a>
+            </div>
+          `;
+          lucide.createIcons();
+          return;
+        }
+
+        let runsCount = 0;
+
+        const html = allUserProjects.map(p => {
+          const loc = p.location ? (p.location.city || p.location.display_name || p.location.raw_input) : 'Location pending';
+          const topPick = p.latest_recommendation ? p.latest_recommendation.top_product : null;
+          const score = p.latest_recommendation ? p.latest_recommendation.suitability_score : null;
+          if (p.latest_recommendation) runsCount++;
+
+          const pDesc = p.description ? p.description.replace(/"/g, '&quot;') : '';
+          const pName = p.name.replace(/"/g, '&quot;');
+
+          return `
+            <div class="glass-card p-5 mb-4 flex items-center justify-between flex-wrap gap-4" style="background: rgba(255,255,255,0.03);">
+              <div class="flex items-center gap-4 min-w-[260px]">
+                <div class="feature-icon" style="margin-bottom:0; width:44px; height:44px; flex-shrink:0;">
+                  <i data-lucide="sprout" style="color:var(--color-primary); width:20px; height:20px;"></i>
+                </div>
+                <div>
+                  <h3 class="text-base font-semibold text-primary">${p.name}</h3>
+                  <div class="text-xs text-muted flex items-center gap-2 mt-1">
+                    <i data-lucide="map-pin" style="width:12px; height:12px;"></i> ${loc}
+                    <span>·</span>
+                    <span>Created ${new Date(p.created_at).toLocaleDateString()}</span>
+                  </div>
+                  ${p.description ? `<p class="text-xs text-muted mt-1" style="max-width: 400px;">${p.description}</p>` : ''}
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3 flex-wrap">
+                ${topPick ? `
+                  <div class="text-right mr-2">
+                    <div class="text-xs text-muted">Top AI Recommendation</div>
+                    <div class="text-sm font-bold text-green">${topPick} <span class="glass-badge badge-primary">${score}%</span></div>
+                  </div>
+                ` : `
+                  <span class="glass-badge badge-neutral mr-2">No AI Run Yet</span>
+                `}
+
+                <!-- View Project Link -->
+                <a href="project-detail.html?id=${p.id}" class="glass-btn glass-btn-sm" title="View Full Project Details">
+                  View <i data-lucide="arrow-right" style="width:14px; height:14px;"></i>
+                </a>
+
+                <!-- Edit Button -->
+                <button class="glass-btn glass-btn-sm" onclick="openEditModal(${p.id}, '${pName}', '${pDesc}')" title="Edit Project Name and Description">
+                  <i data-lucide="edit-2" style="width:14px; height:14px;"></i> Edit
+                </button>
+
+                <!-- Delete Button -->
+                <button class="glass-btn glass-btn-sm glass-btn-danger" onclick="openDeleteModal(${p.id}, '${pName}')" title="Delete Project">
+                  <i data-lucide="trash-2" style="width:14px; height:14px;"></i> Delete
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        container.innerHTML = html;
+        document.getElementById('metric-runs-count').textContent = runsCount;
+        lucide.createIcons();
+
+      } catch (err) {
+        container.innerHTML = `
+          <div class="error-state">
+            <i data-lucide="alert-triangle" style="width:32px; height:32px;"></i>
+            <div>Error loading projects: ${err.message}</div>
+          </div>
+        `;
+        lucide.createIcons();
+      }
+    }
+
+    // ── EDIT PROJECT MODAL ─────────────────────────────────────────────
+    function openEditModal(id, name, desc) {
+      document.getElementById('edit-project-id').value = id;
+      document.getElementById('edit-project-name').value = name;
+      document.getElementById('edit-project-desc').value = desc || '';
+      document.getElementById('modal-edit-project').classList.add('active');
+    }
+
+    function closeEditModal() {
+      document.getElementById('modal-edit-project').classList.remove('active');
+    }
+
+    async function saveProjectEdit() {
+      const id = document.getElementById('edit-project-id').value;
+      const name = document.getElementById('edit-project-name').value.trim();
+      const description = document.getElementById('edit-project-desc').value.trim();
+
+      if (!name) {
+        alert('Please enter a valid project name.');
+        return;
+      }
+
+      const btn = document.getElementById('btn-save-project');
+      btn.disabled = true;
+      btn.innerHTML = `<div class="spinner spinner-sm"></div> Saving…`;
+
+      try {
+        await AgriAPI.projects.update(id, { name, description });
+        closeEditModal();
+        await loadProjects();
+      } catch (err) {
+        alert('Error updating project: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i data-lucide="check" style="width:14px; height:14px;"></i> Save Changes`;
+        lucide.createIcons();
+      }
+    }
+
+    // ── DELETE PROJECT MODAL ───────────────────────────────────────────
+    function openDeleteModal(id, name) {
+      document.getElementById('delete-project-id').value = id;
+      document.getElementById('delete-project-name-display').textContent = `"${name}"`;
+      document.getElementById('modal-delete-project').classList.add('active');
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('modal-delete-project').classList.remove('active');
+    }
+
+    async function executeDeleteProject() {
+      const id = document.getElementById('delete-project-id').value;
+      const btn = document.getElementById('btn-confirm-delete');
+      btn.disabled = true;
+      btn.innerHTML = `<div class="spinner spinner-sm"></div> Deleting…`;
+
+      try {
+        await AgriAPI.projects.delete(id);
+        closeDeleteModal();
+        await loadProjects();
+        // Also refresh quality passports
+        loadQualityPassports();
+      } catch (err) {
+        alert('Error deleting project: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i data-lucide="trash-2" style="width:14px; height:14px;"></i> Delete Project`;
+        lucide.createIcons();
+      }
+    }
+
+    // ── SECTION 2: QUALITY ASSURANCE ──────────────────────────────────
+    async function loadQualityPassports() {
+      const container = document.getElementById('passports-list-container');
+      try {
+        const res = await AgriAPI.quality.getUserPassports();
+        const passports = res.data || [];
+
+        document.getElementById('metric-passports-count').textContent = passports.length;
+
+        if (passports.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">🛡️</div>
+              <div class="empty-state-title">No Quality Assurance Records Created Yet</div>
+              <p class="empty-state-desc">Create a harvest batch inside any of your cultivation projects and upload lab test PDFs to generate verified digital quality assurance certificates with QR codes.</p>
+              <div class="flex gap-3 justify-center mt-4">
+                <a href="quality-passport.html?token=demo" target="_blank" class="glass-btn glass-btn-primary">
+                  <i data-lucide="shield-check" style="width:16px; height:16px;"></i> View Sample QA Certificate
+                </a>
+              </div>
+            </div>
+          `;
+          lucide.createIcons();
+          return;
+        }
+
+        const html = `
+          <div class="glass-table-wrap">
+            <table class="glass-table">
+              <thead>
+                <tr>
+                  <th>Batch Code</th>
+                  <th>Product & Method</th>
+                  <th>Facility Project</th>
+                  <th>Compliance Status</th>
+                  <th>Tests Passed</th>
+                  <th>QA Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${passports.map(p => `
+                  <tr>
+                    <td class="font-mono font-bold text-green">${p.batch_code}</td>
+                    <td>
+                      <div class="font-semibold text-primary">${p.product_name}</div>
+                      <div class="text-xs text-muted">${p.ecosystem}</div>
+                    </td>
+                    <td>${p.project_name}</td>
+                    <td>
+                      <span class="glass-badge ${p.has_passport ? 'badge-success' : 'badge-warning'}">
+                        ${p.has_passport ? p.overall_status : 'Pending Lab Report'}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="font-bold text-primary">${p.tests_passed}</span> / ${p.tests_total} Tests
+                    </td>
+                    <td>
+                      <div class="flex items-center gap-2">
+                        ${p.has_passport && p.share_token ? `
+                          <a href="quality-passport.html?token=${p.share_token}" target="_blank" class="glass-btn glass-btn-sm glass-btn-primary">
+                            <i data-lucide="qr-code" style="width:12px; height:12px;"></i> View QA Certificate
+                          </a>
+                        ` : `
+                          <a href="project-detail.html?id=${p.project_id}" class="glass-btn glass-btn-sm">
+                            <i data-lucide="upload" style="width:12px; height:12px;"></i> Upload Lab PDF
+                          </a>
+                        `}
+                      </div>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+
+        container.innerHTML = html;
+        lucide.createIcons();
+      } catch (err) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <p class="text-xs text-muted mb-3">No active quality assurance records found or server returned: ${err.message}</p>
+            <a href="quality-passport.html?token=demo" target="_blank" class="glass-btn glass-btn-primary glass-btn-sm">
+              <i data-lucide="shield-check" style="width:14px; height:14px;"></i> View Sample QA Verification
+            </a>
+          </div>
+        `;
+        lucide.createIcons();
+      }
+    }
+
+    function verifyTokenDirect() {
+      const token = document.getElementById('verify-token-input').value.trim();
+      if (!token) {
+        alert('Please enter a verification share token or batch code.');
+        return;
+      }
+      window.open(`quality-passport.html?token=${encodeURIComponent(token)}`, '_blank');
+    }
+
+    // ── SECTION 3: MARKET INTELLIGENCE ────────────────────────────────
+    async function loadMarketIntelligence() {
+      const container = document.getElementById('market-grid-container');
+      try {
+        const res = await AgriAPI.market.getOverview();
+        allMarketData = res.data || [];
+        renderMarketCards(allMarketData);
+      } catch (err) {
+        container.innerHTML = `
+          <div class="col-span-3 error-state">
+            <i data-lucide="alert-triangle" style="width:32px; height:32px;"></i>
+            <div>Error loading market benchmarks: ${err.message}</div>
+          </div>
+        `;
+        lucide.createIcons();
+      }
+    }
+
+    function renderMarketCards(data) {
+      const container = document.getElementById('market-grid-container');
+      if (!data || data.length === 0) {
+        container.innerHTML = `<div class="col-span-3 empty-state"><p>No market intelligence entries found.</p></div>`;
+        return;
+      }
+
+      container.innerHTML = data.map(m => {
+        const trendIcon = m.price_trend === 'Rising' ? 'trending-up' : (m.price_trend === 'Falling' ? 'trending-down' : 'minus');
+        const trendClass = m.price_trend === 'Rising' ? 'text-green' : (m.price_trend === 'Falling' ? 'text-danger' : 'text-cyan');
+
+        return `
+          <div class="glass-card p-5 market-crop-card flex flex-col justify-between" style="background: rgba(255,255,255,0.03);">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="glass-badge badge-primary text-xs">${m.ecosystem}</span>
+                <span class="glass-badge ${m.demand_level === 'High' || m.demand_level === 'Very High' ? 'badge-success' : 'badge-neutral'} text-xs">
+                  ${m.demand_level} Demand
+                </span>
+              </div>
+
+              ${m.image_url ? `
+                <div style="height: 120px; border-radius: 8px; overflow: hidden; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.08);">
+                  <img src="${m.image_url}" alt="${m.product_name}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'">
+                </div>
+              ` : ''}
+
+              <h3 class="text-lg font-bold text-primary mb-1">${m.product_name}</h3>
+              <p class="text-xs text-muted italic mb-3">${m.scientific_name || 'Controlled Environment Crop'}</p>
+
+              <!-- Price Box -->
+              <div class="glass-panel p-3 mb-3" style="background: rgba(255,255,255,0.02); border-radius: 6px;">
+                <div class="text-xs text-muted">Benchmark Price Range</div>
+                <div class="text-xl font-extrabold text-green mt-0.5">
+                  ₹ ${m.price_min_inr} – ${m.price_max_inr} <span class="text-xs font-normal text-muted">/ kg</span>
+                </div>
+                <div class="text-xs ${trendClass} flex items-center gap-1 mt-1 font-semibold">
+                  <i data-lucide="${trendIcon}" style="width:12px; height:12px;"></i> ${m.price_trend} Price Trend
+                </div>
+              </div>
+
+              <div class="text-xs text-muted mb-4">
+                <strong>Primary Channel:</strong> ${m.sales_channel}
+              </div>
+            </div>
+
+            <button class="glass-btn glass-btn-sm w-full justify-center" onclick="openMarketDeepDive(${m.product_id}, '${m.product_name.replace(/'/g, "\\'")}')">
+              <i data-lucide="bar-chart-2" style="width:14px; height:14px;"></i> Deep Dive Market Data
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function filterMarketEcosystem(eco, btn) {
+      currentMarketFilter = eco;
+      document.querySelectorAll('#market-filter-buttons .glass-btn').forEach(b => b.classList.remove('glass-btn-primary'));
+      if (btn) btn.classList.add('glass-btn-primary');
+      filterMarketData();
+    }
+
+    function filterMarketData() {
+      const q = document.getElementById('market-search').value.toLowerCase().trim();
+      const filtered = allMarketData.filter(m => {
+        const matchEco = currentMarketFilter === 'all' || m.ecosystem.toLowerCase().includes(currentMarketFilter);
+        const matchQ = !q || m.product_name.toLowerCase().includes(q) || (m.scientific_name && m.scientific_name.toLowerCase().includes(q));
+        return matchEco && matchQ;
+      });
+      renderMarketCards(filtered);
+    }
+
+    async function openMarketDeepDive(productId, productName) {
+      document.getElementById('market-modal-title').textContent = `${productName} — Market Intelligence`;
+      document.getElementById('market-modal-subtitle').textContent = `Live observations, supply chain margins, packaging specs & target industries`;
+      document.getElementById('market-modal-body').innerHTML = `
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <div>Loading commodity telemetry…</div>
+        </div>
+      `;
+      document.getElementById('modal-market-detail').classList.add('active');
+
+      try {
+        const res = await AgriAPI.market.getMarketData(productId);
+        if (!res.success) throw new Error(res.error || 'Failed to load market data');
+
+        const d = res.data;
+        const obs = d.observations || [];
+        const channels = d.sales_channels || [];
+        const packaging = d.packaging_options || [];
+        const endUsers = d.end_users || [];
+
+        document.getElementById('market-modal-body').innerHTML = `
+          <!-- Price Observations -->
+          <h4 class="text-sm font-bold text-primary mb-2 flex items-center gap-2">
+            <i data-lucide="calendar" style="width:14px; height:14px; color:var(--color-primary);"></i>
+            Date-Stamped Price Observations & Sources
+          </h4>
+          <div class="glass-table-wrap mb-6">
+            <table class="glass-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Sales Channel</th>
+                  <th>Geography</th>
+                  <th>Price Range (₹/kg)</th>
+                  <th>Demand</th>
+                  <th>Source</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${obs.map(o => `
+                  <tr>
+                    <td class="font-mono text-xs">${o.observed_at ? o.observed_at.substring(0,10) : '2026-09-01'}</td>
+                    <td class="font-semibold">${o.sales_channel}</td>
+                    <td class="text-xs text-muted">${o.geography}</td>
+                    <td class="font-bold text-green">₹ ${o.price_min_inr} – ${o.price_max_inr}</td>
+                    <td><span class="glass-badge badge-primary text-xs">${o.demand_level}</span></td>
+                    <td class="text-xs text-muted">${o.data_source}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Sales Channels & Spoilage -->
+          <h4 class="text-sm font-bold text-primary mb-2 flex items-center gap-2">
+            <i data-lucide="truck" style="width:14px; height:14px; color:var(--color-primary);"></i>
+            Commercial Sales Channels & Spoilage Tolerances
+          </h4>
+          <div class="grid grid-3 gap-3 mb-6">
+            ${channels.map(c => `
+              <div class="glass-panel p-3" style="background: rgba(255,255,255,0.02); border-radius:6px;">
+                <div class="font-bold text-sm text-primary mb-1">${c.name}</div>
+                <div class="text-xs text-muted">Commission: <span class="text-cyan font-bold">${c.commission_pct}%</span></div>
+                <div class="text-xs text-muted">Avg Spoilage: <span class="text-warning font-bold">${c.spoilage_pct}%</span></div>
+                <div class="text-xs mt-1"><span class="glass-badge ${c.cold_chain_required ? 'badge-primary' : 'badge-neutral'} text-[10px]">${c.cold_chain_required ? 'Cold Chain Required' : 'Ambient OK'}</span></div>
+              </div>
+            `).join('')}
+          </div>
+
+          <!-- Packaging Options -->
+          <h4 class="text-sm font-bold text-primary mb-2 flex items-center gap-2">
+            <i data-lucide="package" style="width:14px; height:14px; color:var(--color-primary);"></i>
+            Packaging Options & Shelf-Life
+          </h4>
+          <div class="grid grid-2 gap-3 mb-6">
+            ${packaging.map(p => `
+              <div class="glass-panel p-3" style="background: rgba(255,255,255,0.02); border-radius:6px;">
+                <div class="font-bold text-sm">${p.type}</div>
+                <div class="text-xs text-muted">Unit Size: <strong class="text-primary">${p.unit_size_kg} kg</strong> · Shelf Life: <strong class="text-green">${p.shelf_life_days} Days</strong></div>
+                <div class="text-xs text-muted">Packaging Cost: <strong class="text-cyan">₹ ${p.cost_inr} / unit</strong></div>
+              </div>
+            `).join('')}
+          </div>
+
+          <!-- End Users -->
+          ${endUsers.length > 0 ? `
+            <h4 class="text-sm font-bold text-primary mb-2 flex items-center gap-2">
+              <i data-lucide="users" style="width:14px; height:14px; color:var(--color-primary);"></i>
+              Target Commercial End-Users & Industries
+            </h4>
+            <div class="grid grid-2 gap-3">
+              ${endUsers.map(e => `
+                <div class="glass-panel p-3" style="background: rgba(255,255,255,0.02); border-radius:6px;">
+                  <span class="glass-badge badge-primary text-xs mb-1">${e.industry}</span>
+                  <div class="font-bold text-sm text-primary">${e.type}</div>
+                  <div class="text-xs text-muted">End Product: ${e.end_product}</div>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+
+          <div class="text-xs text-muted text-center pt-4 mt-4" style="border-top:1px solid rgba(255,255,255,0.08);">
+            ${res.meta ? res.meta.disclaimer : 'Market prices are observed benchmark samples.'}
+          </div>
+        `;
+        lucide.createIcons();
+      } catch (err) {
+        document.getElementById('market-modal-body').innerHTML = `
+          <div class="error-state">
+            <i data-lucide="alert-triangle" style="width:32px; height:32px;"></i>
+            <div>Failed to load market deep dive: ${err.message}</div>
+          </div>
+        `;
+        lucide.createIcons();
+      }
+    }
+
+    function closeMarketModal() {
+      document.getElementById('modal-market-detail').classList.remove('active');
+    }
+
+    // ── SECTION 4: LAB DIRECTORY ──────────────────────────────────────
+    async function loadLabDirectory() {
+      const container = document.getElementById('labs-grid-container');
+      try {
+        const res = await AgriAPI.labs.search();
+        allLabsData = res.data || [];
+        document.getElementById('metric-labs-count').textContent = allLabsData.length;
+        renderLabCards(allLabsData);
+      } catch (err) {
+        container.innerHTML = `
+          <div class="col-span-3 error-state">
+            <i data-lucide="alert-triangle" style="width:32px; height:32px;"></i>
+            <div>Error loading laboratory directory: ${err.message}</div>
+          </div>
+        `;
+        lucide.createIcons();
+      }
+    }
+
+    function renderLabCards(labs) {
+      const container = document.getElementById('labs-grid-container');
+      if (!labs || labs.length === 0) {
+        container.innerHTML = `<div class="col-span-3 empty-state"><p>No certified laboratories found matching your filter criteria.</p></div>`;
+        return;
+      }
+
+      container.innerHTML = labs.map(l => {
+        const caps = l.capabilities || [];
+        const turnMin = l.typical_turnaround_days_min || 3;
+        const turnMax = l.typical_turnaround_days_max || 7;
+
+        return `
+          <div class="glass-card p-5 flex flex-col justify-between" style="background: rgba(255,255,255,0.03);">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="glass-badge badge-success text-xs flex items-center gap-1">
+                  <i data-lucide="shield-check" style="width:12px; height:12px;"></i> ${l.accreditation || 'NABL Accredited'}
+                </span>
+                <span class="text-xs text-muted flex items-center gap-1 font-medium">
+                  <i data-lucide="clock" style="width:12px; height:12px;"></i> ${turnMin}–${turnMax} Days
+                </span>
+              </div>
+
+              <h3 class="text-lg font-bold text-primary mb-1">${l.name}</h3>
+              <div class="text-xs text-muted flex items-center gap-1 mb-3 font-semibold">
+                <i data-lucide="map-pin" style="width:12px; height:12px;"></i> ${l.city}, ${l.state || 'India'}
+              </div>
+
+              <!-- Capabilities -->
+              <div class="mb-4">
+                <div class="text-xs font-bold text-primary mb-1.5">Testing Capabilities:</div>
+                <div class="flex gap-1.5 flex-wrap">
+                  ${caps.map(c => `<span class="glass-badge badge-primary text-[11px]">${c}</span>`).join('')}
+                </div>
+              </div>
+
+              <div class="text-xs text-muted mb-4">
+                <strong>Indicative Fee:</strong> ${l.indicative_cost_notes || '₹1,500 - ₹4,500 per sample'}
+              </div>
+            </div>
+
+            <div class="flex gap-2">
+              <button class="glass-btn glass-btn-sm w-full justify-center" onclick="openLabModalById(${l.id})">
+                <i data-lucide="info" style="width:14px; height:14px;"></i> View Contact & Booking
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function filterLabs() {
+      const city = document.getElementById('lab-city-search').value.toLowerCase().trim();
+      const accreditedOnly = document.getElementById('lab-accredited-only').checked;
+
+      const filtered = allLabsData.filter(l => {
+        const matchCity = !city || (l.city && l.city.toLowerCase().includes(city)) || (l.name && l.name.toLowerCase().includes(city));
+        const matchAccred = !accreditedOnly || l.accreditation_verified === true || (l.accreditation && l.accreditation.includes('NABL'));
+        return matchCity && matchAccred;
+      });
+
+      renderLabCards(filtered);
+    }
+
+    function openLabModalById(labId) {
+      const lab = allLabsData.find(item => item.id === labId);
+      if (!lab) return;
+      openLabModal(lab);
+    }
+
+    function openLabModal(lab) {
+      document.getElementById('lab-modal-name').textContent = lab.name;
+      document.getElementById('lab-modal-accred').textContent = `${lab.accreditation || 'NABL / ISO 17025'} · Verified Analytical Facility`;
+      
+      const phone = lab.phone || '+91 80 2345 6789';
+      const email = lab.email || 'testing@labnetwork.org.in';
+      document.getElementById('lab-modal-call-btn').href = `tel:${phone.replace(/\s/g, '')}`;
+
+      document.getElementById('lab-modal-body').innerHTML = `
+        <div class="glass-panel p-4 mb-4" style="background: rgba(255,255,255,0.02); border-radius:8px;">
+          <div class="grid grid-2 gap-3 mb-3">
+            <div>
+              <div class="text-xs text-muted">Location</div>
+              <div class="text-sm font-semibold">${lab.city}, ${lab.state || 'India'}</div>
+            </div>
+            <div>
+              <div class="text-xs text-muted">Turnaround Time</div>
+              <div class="text-sm font-semibold text-cyan">${lab.typical_turnaround_days_min || 3}–${lab.typical_turnaround_days_max || 7} Business Days</div>
+            </div>
+          </div>
+          <div class="grid grid-2 gap-3">
+            <div>
+              <div class="text-xs text-muted">Direct Phone</div>
+              <div class="text-sm font-bold text-primary font-mono">${phone}</div>
+            </div>
+            <div>
+              <div class="text-xs text-muted">Email Inquiry</div>
+              <div class="text-sm font-bold text-green font-mono">${email}</div>
+            </div>
+          </div>
+        </div>
+
+        <h4 class="text-sm font-bold text-primary mb-2">Available Test Suites</h4>
+        <div class="flex gap-2 flex-wrap mb-4">
+          ${(lab.capabilities || []).map(c => `<span class="glass-badge badge-primary">${c}</span>`).join('')}
+        </div>
+
+        <div class="glass-panel p-3 text-xs text-muted" style="border-radius:6px;">
+          <strong>Sample Submission Protocol:</strong> Provide 250g minimum fresh harvest or 100g dry biomass in vacuum-sealed food-grade container with harvest batch code.
+        </div>
+      `;
+
+      document.getElementById('modal-lab-detail').classList.add('active');
+      lucide.createIcons();
+    }
+
+    function closeLabModal() {
+      document.getElementById('modal-lab-detail').classList.remove('active');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AgriSmart AI — AI-powered decision support for modern alternative food production (Hydroponics, Algaculture, Fungi)">
+  <title>AgriSmart AI — Smart Food Production & Market Intelligence</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <!-- AgriSmart AI CSS -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/glass.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <!-- Top Visual Mode Notice Strip -->
+  <div style="background: rgba(79, 134, 198, 0.10); border-bottom: 1px solid rgba(79, 134, 198, 0.22); font-size: 13px; padding: 6px 16px; text-align: center; position: fixed; top: 0; left: 0; right: 0; z-index: calc(var(--z-navbar) + 1);">
+    <span class="text-green font-semibold">👀 Visual Showcase Mode:</span> 
+    <span class="text-secondary">Platform preview only. Registered user account required to execute AI models and access operational tools.</span>
+    <a href="pages/user/register.html" class="text-cyan font-bold underline ml-2">Create Free Account</a>
+    <span class="text-muted mx-1">·</span>
+    <a href="pages/user/login.html" class="text-primary font-bold underline">Sign In</a>
+  </div>
+
+  <!-- Top Glass Navbar (Offset for notice strip) -->
+  <nav class="glass-navbar with-notice">
+    <a href="index.html" class="navbar-brand">
+      <div class="navbar-logo">🌱</div>
+      <div class="navbar-brand-text">Agri<span>Smart AI</span></div>
+    </a>
+
+    <div class="navbar-spacer"></div>
+
+    <ul class="navbar-nav">
+      <li class="navbar-nav-item"><a href="#ecosystems">Ecosystems</a></li>
+      <li class="navbar-nav-item"><a href="#workflow">Workflow</a></li>
+      <li class="navbar-nav-item"><a href="#quality">Quality Assurance</a></li>
+      <li class="navbar-nav-item"><a href="#market">Market Intelligence</a></li>
+    </ul>
+
+    <div class="flex items-center gap-3">
+      <a href="pages/user/login.html" class="glass-btn glass-btn-sm" id="nav-login-btn">Sign In</a>
+      <a href="pages/user/register.html" class="glass-btn glass-btn-primary glass-btn-sm" id="nav-register-btn">Get Started</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section" style="padding-top: calc(var(--space-20) + 32px);">
+    <div style="max-width: 900px; margin: 0 auto;">
+      <div class="glass-badge badge-primary mb-4">
+        <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i>
+        Next-Generation Autonomous Decision Support
+      </div>
+      <h1 class="hero-title">
+        From Location to Cultivation to Market — <span class="highlight">Smarter Food Production</span>
+      </h1>
+      <p class="hero-tagline">
+        Empowering urban and modern growers with automated climate intelligence, two-layer AI crop suitability recommendations, laboratory-verified quality assurance, and direct buyer market matching.
+      </p>
+
+      <div class="hero-cta">
+        <button class="glass-btn glass-btn-primary glass-btn-lg" onclick="handleFeatureAccess('pages/user/create-project.html')">
+          <i data-lucide="play" style="width: 18px; height: 18px;"></i>
+          Start Free Project
+        </button>
+        <button class="glass-btn glass-btn-lg" onclick="handleFeatureAccess('pages/user/dashboard.html')">
+          <i data-lucide="layout-dashboard" style="width: 18px; height: 18px;"></i>
+          Access Dashboard
+        </button>
+      </div>
+
+      <!-- Quick Metrics Strip -->
+      <div class="grid grid-3 mt-8" style="max-width: 780px; margin-left: auto; margin-right: auto;">
+        <div class="glass-card p-4 text-center">
+          <div class="text-2xl font-bold text-green">3 Ecosystems</div>
+          <div class="text-xs text-muted mt-1">Hydroponics · Algae · Fungi</div>
+        </div>
+        <div class="glass-card p-4 text-center">
+          <div class="text-2xl font-bold text-lime">10 Objectives</div>
+          <div class="text-xs text-muted mt-1">Area · Capital · Water · Profit</div>
+        </div>
+        <div class="glass-card p-4 text-center">
+          <div class="text-2xl font-bold text-gold">Quality Assurance</div>
+          <div class="text-xs text-muted mt-1">Digital QR Traceability</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 Cultivation Ecosystems Section -->
+  <section id="ecosystems" class="section">
+    <div class="text-center mb-8">
+      <div class="glass-badge badge-neutral mb-2">Sustainable & Soil-Free</div>
+      <h2 class="section-title">Three Advanced Cultivation Ecosystems</h2>
+      <p class="section-subtitle">Engineered for high resource efficiency, zero topsoil dependency, and urban scalability.</p>
+    </div>
+
+    <div class="grid grid-3">
+      <!-- Hydroponics -->
+      <div class="glass-card feature-card">
+        <div class="feature-icon" style="background: rgba(79, 134, 198, 0.15); border-color: rgba(79, 134, 198, 0.35);">
+          <i data-lucide="sprout" style="color: var(--color-primary); width: 24px; height: 24px;"></i>
+        </div>
+        <h3 class="feature-title">Hydroponic Systems</h3>
+        <p class="feature-desc">
+          Precision water-based cultivation of high-value greens, culinary herbs, and fruiting crops (Lettuce, Spinach, Basil, Microgreens, Tomatoes, Strawberries) with up to 90% water recycling efficiency.
+        </p>
+        <div class="mt-4 text-xs text-green font-medium">11 Calibrated Crops · NFT / DWC / Substrate</div>
+      </div>
+
+      <!-- Algaculture -->
+      <div class="glass-card feature-card">
+        <div class="feature-icon" style="background: rgba(143, 175, 208, 0.20); border-color: rgba(143, 175, 208, 0.40);">
+          <i data-lucide="waves" style="color: var(--color-primary); width: 24px; height: 24px;"></i>
+        </div>
+        <h3 class="feature-title">Algaculture & Microalgae</h3>
+        <p class="feature-desc">
+          High-protein, nutraceutical-grade microalgae (Spirulina, Chlorella) cultivated in photobioreactors or open raceway ponds with massive carbon capture capability and rapid 7-14 day harvest cycles.
+        </p>
+        <div class="mt-4 text-xs text-cyan font-medium">>60% Protein Density · High Commercial Value</div>
+      </div>
+
+      <!-- Fungi / Mushrooms -->
+      <div class="glass-card feature-card">
+        <div class="feature-icon" style="background: rgba(217, 119, 6, 0.14); border-color: rgba(217, 119, 6, 0.35);">
+          <i data-lucide="box" style="color: var(--color-warning); width: 24px; height: 24px;"></i>
+        </div>
+        <h3 class="feature-title">Fungi & Mushrooms</h3>
+        <p class="feature-desc">
+          Zero-light, climate-controlled indoor cultivation utilizing agricultural residues (Paddy straw, sawdust) to grow Oyster, Button, Milky, Shiitake, and Lion's Mane mushrooms with ultra-low water footprints.
+        </p>
+        <div class="mt-4 text-xs text-warning font-medium">5 Specialized Varieties · High Space Density</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Complete Decision Flow -->
+  <section id="workflow" class="section">
+    <div class="text-center mb-8">
+      <div class="glass-badge badge-neutral mb-2">End-to-End Pipeline</div>
+      <h2 class="section-title">The AgriSmart Decision Workflow</h2>
+      <p class="section-subtitle">From location resolution to market matching in 5 transparent AI-guided steps.</p>
+    </div>
+
+    <div class="grid grid-auto">
+      <div class="glass-card p-5">
+        <div class="text-xs text-green font-bold mb-2">STEP 01</div>
+        <h4 class="font-semibold mb-2">Location & Weather</h4>
+        <p class="text-xs text-secondary">Auto-resolves coordinates via OSM Nominatim and pulls real-time weather and 7-day climate forecasts via Open-Meteo.</p>
+      </div>
+      <div class="glass-card p-5">
+        <div class="text-xs text-green font-bold mb-2">STEP 02</div>
+        <h4 class="font-semibold mb-2">Resource Profiling</h4>
+        <p class="text-xs text-secondary">Input your available area (sqm), capital budget, daily water supply, workforce hours, and indoor/greenhouse constraints.</p>
+      </div>
+      <div class="glass-card p-5">
+        <div class="text-xs text-green font-bold mb-2">STEP 03</div>
+        <h4 class="font-semibold mb-2">Two-Layer AI Engine</h4>
+        <p class="text-xs text-secondary">Layer 1 filters hard feasibility; Layer 2 executes multi-factor suitability scoring adjusted dynamically by your chosen objective.</p>
+      </div>
+      <div class="glass-card p-5">
+        <div class="text-xs text-green font-bold mb-2">STEP 04</div>
+        <h4 class="font-semibold mb-2">Why This / Not That</h4>
+        <p class="text-xs text-secondary">Understand exactly why a crop was recommended with SHAP feature importance, positive/negative contributions, and side-by-side contrast analysis.</p>
+      </div>
+      <div class="glass-card p-5">
+        <div class="text-xs text-green font-bold mb-2">STEP 05</div>
+        <h4 class="font-semibold mb-2">Quality & Market</h4>
+        <p class="text-xs text-secondary">Upload lab reports with automated OCR extraction, generate QR Quality Assurance Certificates, and match with verified commercial buyers.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: Quality Assurance -->
+  <section id="quality" class="section">
+    <div class="text-center mb-8">
+      <div class="glass-badge badge-neutral mb-2">Cryptographic Traceability</div>
+      <h2 class="section-title">Quality Assurance & OCR Lab Verification</h2>
+      <p class="section-subtitle">Automated OCR lab report ingestion, FSSAI & NABL compliance scoring, and public QR traceability.</p>
+    </div>
+
+    <div class="glass-card p-8 mb-8" style="max-width: 960px; margin: 0 auto;">
+      <div class="flex items-center justify-between flex-wrap gap-6 mb-6">
+        <div>
+          <span class="glass-badge badge-success mb-2">
+            <i data-lucide="shield-check" style="width:14px; height:14px;"></i> 100% FSSAI COMPLIANT · GRADE A
+          </span>
+          <h3 class="text-2xl font-extrabold text-primary">Butterhead Lettuce (Hydroponics NFT)</h3>
+          <div class="text-xs text-muted mt-1">Batch Code: <span class="font-mono text-green font-bold">#LETT-2026-001-DEMO</span> · Harvest Date: <span class="text-lime font-semibold">2026-09-25</span></div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <a href="pages/user/quality-passport.html?token=demo" target="_blank" class="glass-btn glass-btn-primary">
+            <i data-lucide="qr-code" style="width:16px; height:16px;"></i> Open Sample Verified QA Certificate
+          </a>
+        </div>
+      </div>
+
+      <!-- Sample Test Matrix Table -->
+      <div class="glass-table-wrap mb-6">
+        <table class="glass-table">
+          <thead>
+            <tr>
+              <th>Test Parameter</th>
+              <th>Reported Value</th>
+              <th>FSSAI Standard Limit</th>
+              <th>Compliance Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="font-semibold text-primary">E. coli / Total Coliforms</td>
+              <td>Absent / Not Detected (&lt; 10 CFU/g)</td>
+              <td class="text-xs text-muted">Absent in 25g</td>
+              <td><span class="glass-badge badge-success text-xs">PASS</span></td>
+            </tr>
+            <tr>
+              <td class="font-semibold text-primary">Heavy Metals (Lead Pb &amp; Cadmium Cd)</td>
+              <td>0.012 mg/kg (Pb) / 0.004 mg/kg (Cd)</td>
+              <td class="text-xs text-muted">Max: 0.1 mg/kg / 0.05 mg/kg</td>
+              <td><span class="glass-badge badge-success text-xs">PASS</span></td>
+            </tr>
+            <tr>
+              <td class="font-semibold text-primary">Multi-Residue Pesticide Screen (250+ compounds)</td>
+              <td>Not Detected (&lt; 0.01 mg/kg)</td>
+              <td class="text-xs text-muted">Zero Tolerance MRL</td>
+              <td><span class="glass-badge badge-success text-xs">PASS</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="flex items-center justify-between flex-wrap gap-4 text-xs text-muted pt-4" style="border-top: 1px solid rgba(217, 227, 236, 0.65);">
+        <div>Verified by NABL Accredited Analytical Testing Laboratories.</div>
+        <button class="text-lime hover:underline flex items-center gap-1 font-semibold bg-transparent border-0 cursor-pointer p-0" onclick="handleFeatureAccess('pages/user/dashboard.html')">
+          Create Batches &amp; QA Reports in Producer Dashboard <i data-lucide="arrow-right" style="width:12px; height:12px;"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4: Market Intelligence -->
+  <section id="market" class="section">
+    <div class="text-center mb-8">
+      <div class="glass-badge badge-neutral mb-2">Commercial Economics</div>
+      <h2 class="section-title">CEA Market Intelligence & Buyer Discovery</h2>
+      <p class="section-subtitle">Real-time commodity price ranges, commercial sales channel spreads, packaging standards, and direct institutional buyer matching.</p>
+    </div>
+
+    <div class="grid grid-4 mb-8">
+      <div class="glass-card p-5 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="glass-badge badge-primary text-[11px]">Hydroponics</span>
+            <span class="glass-badge badge-success text-[11px]">High Demand</span>
+          </div>
+          <h4 class="text-base font-bold text-primary mb-1">Butterhead Lettuce</h4>
+          <div class="text-xl font-extrabold text-green my-2">₹ 140 – 200 <span class="text-xs font-normal text-muted">/ kg</span></div>
+          <p class="text-xs text-muted mb-3">Direct to HoReCa &amp; premium supermarket retail chains.</p>
+        </div>
+        <div class="text-xs text-green font-semibold flex items-center gap-1">
+          <i data-lucide="trending-up" style="width:12px; height:12px;"></i> Rising Price Trend
+        </div>
+      </div>
+
+      <div class="glass-card p-5 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="glass-badge badge-primary text-[11px]">Algaculture</span>
+            <span class="glass-badge badge-success text-[11px]">Premium</span>
+          </div>
+          <h4 class="text-base font-bold text-primary mb-1">Spirulina Superfood</h4>
+          <div class="text-xl font-extrabold text-green my-2">₹ 650 – 1,200 <span class="text-xs font-normal text-muted">/ kg</span></div>
+          <p class="text-xs text-muted mb-3">Nutraceutical powder &amp; clinical phycocyanin extraction.</p>
+        </div>
+        <div class="text-xs text-lime font-semibold flex items-center gap-1">
+          <i data-lucide="trending-up" style="width:12px; height:12px;"></i> High Margin Demand
+        </div>
+      </div>
+
+      <div class="glass-card p-5 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="glass-badge badge-primary text-[11px]">Fungi</span>
+            <span class="glass-badge badge-success text-[11px]">Steady</span>
+          </div>
+          <h4 class="text-base font-bold text-primary mb-1">Oyster Mushroom</h4>
+          <div class="text-xl font-extrabold text-green my-2">₹ 120 – 180 <span class="text-xs font-normal text-muted">/ kg</span></div>
+          <p class="text-xs text-muted mb-3">Fresh wholesale mandis &amp; vegan meat alternative brands.</p>
+        </div>
+        <div class="text-xs text-muted font-semibold flex items-center gap-1">
+          <i data-lucide="minus" style="width:12px; height:12px;"></i> Consistent Year-Round
+        </div>
+      </div>
+
+      <div class="glass-card p-5 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="glass-badge badge-primary text-[11px]">Hydroponics</span>
+            <span class="glass-badge badge-success text-[11px]">High Demand</span>
+          </div>
+          <h4 class="text-base font-bold text-primary mb-1">Genovese Basil</h4>
+          <div class="text-xl font-extrabold text-green my-2">₹ 180 – 300 <span class="text-xs font-normal text-muted">/ kg</span></div>
+          <p class="text-xs text-muted mb-3">Artisan Italian restaurants &amp; commercial pesto processors.</p>
+        </div>
+        <div class="text-xs text-green font-semibold flex items-center gap-1">
+          <i data-lucide="trending-up" style="width:12px; height:12px;"></i> Bullish Demand
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-center gap-4 flex-wrap">
+      <button class="glass-btn glass-btn-primary glass-btn-lg" onclick="handleFeatureAccess('pages/user/cultivation-kb.html')">
+        <i data-lucide="book-open" style="width:18px; height:18px;"></i> Explore All 18 Crops in Knowledge Base
+      </button>
+      <button class="glass-btn glass-btn-lg" onclick="handleFeatureAccess('pages/buyer/dashboard.html')">
+        <i data-lucide="shopping-bag" style="width:18px; height:18px;"></i> Commercial Buyer Portal
+      </button>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- MODAL: Auth Gate for Unauthenticated Users                             -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="glass-modal-overlay" id="modal-auth-gate">
+    <div class="glass-modal" style="max-width: 500px; width: 95%; text-align: center;">
+      <div class="glass-modal-header" style="justify-content: center; position: relative;">
+        <div class="feature-icon" style="margin: 0 auto; width: 56px; height: 56px; background: rgba(79, 134, 198, 0.15); border-color: rgba(79, 134, 198, 0.35);">
+          <i data-lucide="lock" style="color: var(--color-primary); width: 28px; height: 28px;"></i>
+        </div>
+        <button class="glass-modal-close" onclick="closeAuthGateModal()" style="position: absolute; right: 16px; top: 16px;">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="glass-modal-body" style="padding: 24px;">
+        <span class="glass-badge badge-neutral mb-3">Visual Showcase Mode</span>
+        <h3 class="text-2xl font-extrabold text-primary mb-2">Account Required to Access Features</h3>
+        <p class="text-xs text-secondary mb-6 leading-relaxed">
+          The features on this showcase are for visual demonstration. To execute two-layer AI crop suitability runs, create cultivation projects, simulate microclimates, generate digital quality assurance certificates, and trade with verified commercial buyers, please sign in or create a free account.
+        </p>
+
+        <div class="flex flex-col gap-3">
+          <a href="pages/user/register.html" class="glass-btn glass-btn-primary glass-btn-lg justify-center" id="auth-gate-register-btn">
+            <i data-lucide="user-plus" style="width: 18px; height: 18px;"></i> Create Free Producer / Buyer Account
+          </a>
+          <a href="pages/user/login.html" class="glass-btn glass-btn-lg justify-center" id="auth-gate-login-btn">
+            <i data-lucide="log-in" style="width: 18px; height: 18px;"></i> Sign In with Existing Account
+          </a>
+        </div>
+      </div>
+      <div class="glass-modal-footer" style="justify-content: center;">
+        <button class="glass-btn glass-btn-sm" onclick="closeAuthGateModal()">Continue Visual Preview</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="glass-panel p-8 mt-16 text-center text-xs text-muted">
+    <div class="mb-4">
+      <span class="font-semibold text-secondary">AgriSmart AI</span> — AI-Based Smart Food Production & Market Intelligence Platform
+    </div>
+    <div class="mb-2">
+      Weather Attribution: <a href="https://open-meteo.com" target="_blank" class="text-cyan">Open-Meteo (CC BY 4.0)</a> ·
+      Geocoding Attribution: <a href="https://nominatim.openstreetmap.org" target="_blank" class="text-cyan">OpenStreetMap Contributors (ODbL)</a>
+    </div>
+    <div>All yields, revenues, and prices displayed are non-guaranteed estimates for decision support.</div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/interactive-bg.js"></script>
+  <script src="js/navigation.js"></script>
+  <script>
+    lucide.createIcons();
+
+    if (AgriAPI.isLoggedIn()) {
+      const user = AgriAPI.getCurrentUser();
+      const target = user && user.role === 'admin' ? 'pages/admin/dashboard.html' : (user && user.role === 'buyer' ? 'pages/buyer/dashboard.html' : 'pages/user/dashboard.html');
+      document.getElementById('nav-login-btn').textContent = 'Dashboard';
+      document.getElementById('nav-login-btn').href = target;
+      document.getElementById('nav-register-btn').style.display = 'none';
+    }
+
+    // ── FEATURE ACCESS AUTH GATE ──────────────────────────────────────
+    function handleFeatureAccess(targetUrl) {
+      if (AgriAPI.isLoggedIn()) {
+        const user = AgriAPI.getCurrentUser();
+        // Redirect based on target or role if appropriate
+        if (targetUrl.includes('buyer') && user.role !== 'buyer' && user.role !== 'admin') {
+          window.location.href = 'pages/user/dashboard.html';
+        } else {
+          window.location.href = targetUrl;
+        }
+      } else {
+        // Open Auth Gate Modal
+        const encoded = encodeURIComponent(targetUrl);
+        document.getElementById('auth-gate-login-btn').href = `pages/user/login.html?next=${encoded}`;
+        document.getElementById('auth-gate-register-btn').href = `pages/user/register.html?next=${encoded}`;
+        document.getElementById('modal-auth-gate').classList.add('active');
+      }
+    }
+
+    function closeAuthGateModal() {
+      document.getElementById('modal-auth-gate').classList.remove('active');
+    }
+
+    function scrollToSection(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        const navHeight = 90;
+        const y = el.getBoundingClientRect().top + window.pageYOffset - navHeight;
+        window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+      }
+    }
+
+    // Attach click listeners to all in-page nav links
+    document.querySelectorAll('.navbar-nav a[href^="#"]').forEach(link => {
+      link.addEventListener('click', function(e) {
+        const targetId = this.getAttribute('href').substring(1);
+        const targetEl = document.getElementById(targetId);
+        if (targetEl) {
+          e.preventDefault();
+          scrollToSection(targetId);
+          try {
+            history.pushState(null, null, `#${targetId}`);
+          } catch (_) {}
+        }
+      });
+    });
+
+    // Handle hash on page load (e.g. #quality or #market)
+    window.addEventListener('load', () => {
+      if (window.location.hash) {
+        const hash = window.location.hash.substring(1);
+        setTimeout(() => { scrollToSection(hash); }, 150);
+      }
+    });
+  </script>
+</body>
+</html>

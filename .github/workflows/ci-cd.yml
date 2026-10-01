@@ -1,0 +1,39 @@
+name: AgriSmart AI CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    name: Backend Test Suite & Health Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          pip install pytest pytest-flask pytest-cov
+
+      - name: Run Test Suite
+        env:
+          SECRET_KEY: ci-test-secret-key-12345
+          JWT_SECRET_KEY: ci-test-jwt-secret-key-12345
+          DATABASE_URL: sqlite:///:memory:
+          FRONTEND_URL: http://localhost:5500
+          FLASK_ENV: testing
+        run: |
+          cd backend
+          python -m pytest tests/ -v --tb=short

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quality Assurance Certificate — AgriSmart AI</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <!-- AgriSmart AI CSS -->
+  <link rel="stylesheet" href="../../css/variables.css">
+  <link rel="stylesheet" href="../../css/glass.css">
+  <link rel="stylesheet" href="../../css/layout.css">
+  <link rel="stylesheet" href="../../css/responsive.css">
+</head>
+<body>
+
+  <!-- Minimal Verification Navbar -->
+  <nav class="glass-navbar">
+    <a href="../../index.html" class="navbar-brand">
+      <div class="navbar-logo">🌱</div>
+      <div class="navbar-brand-text">Agri<span>Smart AI</span></div>
+    </a>
+    <div class="navbar-spacer"></div>
+    <span class="glass-badge badge-success">
+      <i data-lucide="shield-check" style="width:14px; height:14px;"></i> Verified Quality Assurance Certificate
+    </span>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content no-sidebar" style="max-width: 800px; margin: 0 auto; padding: var(--space-8);">
+    <div id="passport-container">
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <div>Verifying Quality Assurance Certificate…</div>
+      </div>
+    </div>
+  </main>
+
+  <script src="../../js/config.js"></script>
+  <script src="../../js/api.js"></script>
+  <script src="../../js/interactive-bg.js"></script>
+  <script src="../../js/navigation.js"></script>
+  <script>
+    lucide.createIcons();
+    const token = new URLSearchParams(window.location.search).get('token');
+
+    async function loadPassport() {
+      const container = document.getElementById('passport-container');
+      if (!token) {
+        container.innerHTML = `<div class="error-state">No verification token supplied.</div>`;
+        return;
+      }
+
+      try {
+        const res = await AgriAPI.get(`/quality/passport/${token}`);
+        if (res.success) {
+          const d = res.data.passport;
+          const qr = res.data.qr_code_image;
+
+          container.innerHTML = `
+            <div class="glass-card p-8">
+              <div class="flex items-center justify-between flex-wrap gap-4 mb-6">
+                <div>
+                  <span class="glass-badge badge-success mb-2">${d.overall_quality_status}</span>
+                  <h1 class="text-3xl font-extrabold text-primary">${d.product_name}</h1>
+                  <div class="text-sm text-muted">${d.method} · Batch Code: <span class="font-mono text-green">${d.batch_code}</span></div>
+                </div>
+                ${qr ? `<img src="${qr}" alt="Batch QR Code" style="width:90px; height:90px; border-radius:8px; border:1px solid rgba(255,255,255,0.2);">` : ''}
+              </div>
+
+              <!-- Metadata -->
+              <div class="grid grid-3 gap-4 mb-8 text-center">
+                <div class="glass-panel p-3" style="border-radius:8px;">
+                  <div class="text-xs text-muted">Producer Project</div>
+                  <div class="text-sm font-bold">${d.producer_project}</div>
+                </div>
+                <div class="glass-panel p-3" style="border-radius:8px;">
+                  <div class="text-xs text-muted">Harvest Date</div>
+                  <div class="text-sm font-bold text-lime">${d.harvest_date || 'In Progress'}</div>
+                </div>
+                <div class="glass-panel p-3" style="border-radius:8px;">
+                  <div class="text-xs text-muted">Tests Passed</div>
+                  <div class="text-sm font-bold text-green">${d.tests_passed_count} / ${d.tests_conducted_count}</div>
+                </div>
+              </div>
+
+              <!-- Test Results Matrix -->
+              <h3 class="text-lg font-bold mb-4">Laboratory Test Matrix</h3>
+              <div class="glass-table-wrap mb-6">
+                <table class="glass-table">
+                  <thead>
+                    <tr>
+                      <th>Test Parameter</th>
+                      <th>Reported Value</th>
+                      <th>Standard Limit</th>
+                      <th>Result</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${(d.test_results || []).map(t => `
+                      <tr>
+                        <td class="font-semibold">${t.test_name}</td>
+                        <td>${t.result_value}</td>
+                        <td class="text-muted text-xs">${t.specification_limit || 'FSSAI Standard'}</td>
+                        <td><span class="glass-badge ${t.pass_fail === 'pass' ? 'badge-success' : 'badge-danger'}">${t.pass_fail.toUpperCase()}</span></td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="text-xs text-muted text-center pt-4" style="border-top:1px solid rgba(255,255,255,0.1);">
+                ${d.disclaimer}
+              </div>
+            </div>
+          `;
+          lucide.createIcons();
+        }
+      } catch (err) {
+        container.innerHTML = `<div class="error-state">Invalid or expired quality assurance verification token.</div>`;
+      }
+    }
+
+    loadPassport();
+  </script>
+</body>
+</html>

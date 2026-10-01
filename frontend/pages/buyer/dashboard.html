@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buyer Portal — AgriSmart AI</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <!-- AgriSmart AI CSS -->
+  <link rel="stylesheet" href="../../css/variables.css">
+  <link rel="stylesheet" href="../../css/glass.css">
+  <link rel="stylesheet" href="../../css/layout.css">
+  <link rel="stylesheet" href="../../css/responsive.css">
+</head>
+<body>
+
+  <!-- Top Glass Navbar -->
+  <nav class="glass-navbar">
+    <a href="../../index.html" class="navbar-brand">
+      <div class="navbar-logo">🌱</div>
+      <div class="navbar-brand-text">Agri<span>Smart AI</span></div>
+    </a>
+    <div class="navbar-spacer"></div>
+    <div class="flex items-center gap-3">
+      <!-- Account Menu Dropdown Container -->
+      <div class="account-menu-container" style="position: relative;">
+        <button id="btn-user-account-menu" class="navbar-user-btn" style="border: 1.5px solid rgba(255,255,255,0.85); background: rgba(255,255,255,0.85); cursor: pointer;" aria-haspopup="true" aria-expanded="false">
+          <div class="navbar-avatar user-avatar-initial" style="background: #2563EB; color: #FFF;">B</div>
+          <span class="user-display-name font-medium">Buyer Procurement</span>
+          <span class="glass-badge badge-primary user-role-badge">Commercial Buyer</span>
+          <i data-lucide="chevron-down" style="width: 14px; height: 14px; color: #64748B;"></i>
+        </button>
+
+        <!-- User Account Dropdown Menu -->
+        <div id="user-account-dropdown-menu" class="account-dropdown" style="position: absolute; top: calc(100% + 10px); right: 0; width: 270px; background: rgba(255, 255, 255, 0.98); border: 1.5px solid rgba(255, 255, 255, 0.95); border-radius: 16px; backdrop-filter: blur(24px); box-shadow: 0 18px 45px rgba(15, 23, 42, 0.15); padding: 8px; z-index: 1000; display: none;">
+          <div class="account-dropdown-header" style="padding: 10px 12px; border-bottom: 1px solid #E2E8F0; margin-bottom: 6px;">
+            <div class="font-bold text-sm user-display-name" style="color: #0F172A;">Buyer Procurement</div>
+            <div class="text-xs text-muted user-display-email">buyer@agrismart.local</div>
+          </div>
+
+          <!-- Switch to Admin Option (Strictly visible only for active Admins) -->
+          <div id="admin-switch-option-container" style="display: none;">
+            <a href="../admin/dashboard.html" class="account-dropdown-item font-semibold" style="background: #FEF2F2; border: 1px solid #FECACA; color: #DC2626; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; border-radius: 10px; text-decoration: none; font-size: 13px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="repeat" style="width: 15px; height: 15px; color: #DC2626;"></i>
+                <span>Switch to Admin Console</span>
+              </div>
+              <span class="glass-badge badge-danger" style="font-size: 10px; padding: 2px 6px;">Admin Mode</span>
+            </a>
+            <div class="account-dropdown-divider" style="height: 1px; background: #E2E8F0; margin: 6px 0;"></div>
+          </div>
+
+          <a href="../user/dashboard.html" class="account-dropdown-item font-semibold" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; color: #059669; background: #ECFDF5; border: 1px solid #A7F3D0; margin-bottom: 6px; font-size: 13px; text-decoration: none;">
+            <i data-lucide="sprout" style="width: 15px; height: 15px; color: #059669;"></i>
+            <span>Farmer / Producer Portal</span>
+          </a>
+
+          <a href="dashboard.html" class="account-dropdown-item" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; color: #1E293B; font-size: 13px; font-weight: 600; text-decoration: none;">
+            <i data-lucide="shopping-bag" style="width: 15px; height: 15px; color: #2563EB;"></i>
+            Buyer Marketplace
+          </a>
+
+          <div class="account-dropdown-divider" style="height: 1px; background: #E2E8F0; margin: 6px 0;"></div>
+
+          <button class="account-dropdown-item btn-logout" style="color: #DC2626; width: 100%; display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; font-size: 13px; font-weight: 600; background: transparent; border: none; cursor: pointer;">
+            <i data-lucide="log-out" style="width: 15px; height: 15px;"></i>
+            Sign Out
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content no-sidebar" style="max-width: 1100px; margin: 0 auto; padding: var(--space-8);">
+    <div class="page-header mb-8">
+      <div class="page-header-row">
+        <div>
+          <h1 class="page-title">Commercial Buyer Portal</h1>
+          <p class="page-subtitle">Post monthly procurement requirements, view matched high-compliance producers, and issue purchase orders.</p>
+        </div>
+        <button class="glass-btn glass-btn-primary" onclick="openReqModal()">
+          <i data-lucide="plus" style="width:14px; height:14px;"></i> Post New Requirement
+        </button>
+      </div>
+    </div>
+
+    <!-- Active Requirements Section -->
+    <div class="glass-card p-6 mb-8">
+      <h3 class="text-xl font-bold mb-4">Your Active Procurement Orders</h3>
+      <div id="buyer-reqs-container">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Post Requirement Modal -->
+  <div class="glass-modal-overlay" id="modal-req">
+    <div class="glass-modal">
+      <div class="glass-modal-header">
+        <h3 class="glass-modal-title">Post Procurement Requirement</h3>
+        <button class="glass-modal-close" onclick="closeReqModal()"><i data-lucide="x"></i></button>
+      </div>
+      <div class="glass-modal-body">
+        <div class="glass-input-group mb-4">
+          <label class="glass-label">Crop Required</label>
+          <select id="req-crop" class="glass-select">
+            <optgroup label="🌱 Hydroponics (11 Varieties)">
+              <option value="1">Lettuce (Lactuca sativa)</option>
+              <option value="2">Spinach (Spinacia oleracea)</option>
+              <option value="3">Kale (Brassica oleracea var. acephala)</option>
+              <option value="4">Basil (Ocimum basilicum)</option>
+              <option value="5">Mint (Mentha spicata)</option>
+              <option value="6">Coriander (Coriandrum sativum)</option>
+              <option value="7">Tomato (Solanum lycopersicum)</option>
+              <option value="8">Cucumber (Cucumis sativus)</option>
+              <option value="9">Bell Pepper (Capsicum annuum)</option>
+              <option value="10">Strawberry (Fragaria × ananassa)</option>
+              <option value="11">Microgreens (Mixed Brassica & Herbs)</option>
+            </optgroup>
+            <optgroup label="🌊 Algaculture / Microalgae (2 Species)">
+              <option value="12">Spirulina (Arthrospira platensis)</option>
+              <option value="13">Chlorella (Chlorella vulgaris)</option>
+            </optgroup>
+            <optgroup label="🍄 Fungi / Mushroom Cultivation (5 Varieties)">
+              <option value="14">Oyster Mushroom (Pleurotus ostreatus)</option>
+              <option value="15">Button Mushroom (Agaricus bisporus)</option>
+              <option value="16">Milky Mushroom (Calocybe indica)</option>
+              <option value="17">Shiitake Mushroom (Lentinula edodes)</option>
+              <option value="18">Lion's Mane (Hericium erinaceus)</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="glass-input-group mb-4">
+          <label class="glass-label">Monthly Quantity (kg)</label>
+          <input type="number" id="req-qty" class="glass-input" value="300" min="10">
+        </div>
+        <div class="glass-input-group mb-4">
+          <label class="glass-label">Target Purchase Price (₹ / kg)</label>
+          <input type="number" id="req-price" class="glass-input" value="150" min="10">
+        </div>
+        <div class="glass-input-group">
+          <label class="glass-label">Quality Grade</label>
+          <input type="text" id="req-grade" class="glass-input" value="Grade A Premium / FSSAI Compliant">
+        </div>
+      </div>
+      <div class="glass-modal-footer">
+        <button class="glass-btn" onclick="closeReqModal()">Cancel</button>
+        <button class="glass-btn glass-btn-primary" onclick="submitReq()">Submit Requirement</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../js/config.js?v=3.2.0"></script>
+  <script src="../../js/api.js?v=3.2.0"></script>
+  <script src="../../js/auth.js?v=3.2.0"></script>
+  <script src="../../js/interactive-bg.js?v=3.2.0"></script>
+  <script src="../../js/navigation.js?v=3.2.0"></script>
+  <script>
+    lucide.createIcons();
+    AuthGuard.requireAuth(['buyer', 'admin']);
+    AuthGuard.initUserNavbar();
+
+    function openReqModal() { document.getElementById('modal-req').classList.add('active'); }
+    function closeReqModal() { document.getElementById('modal-req').classList.remove('active'); }
+
+    async function syncCropsFromAPI() {
+      try {
+        const res = await AgriAPI.cultivation.getProducts();
+        const products = (res.data && res.data.products) || (Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []));
+        if (products && products.length > 0) {
+          const select = document.getElementById('req-crop');
+          const currentVal = select.value;
+          
+          // Group by method/ecosystem
+          const groups = {
+            hydroponics: { label: '🌱 Hydroponics (Soil-Free)', items: [] },
+            algaculture: { label: '🌊 Algaculture / Microalgae', items: [] },
+            fungi: { label: '🍄 Fungi / Mushroom Cultivation', items: [] },
+            other: { label: '🌿 Alternative Crops', items: [] }
+          };
+
+          products.forEach(p => {
+            const m = (p.method_name || p.ecosystem || '').toLowerCase();
+            if (m.includes('hydro')) groups.hydroponics.items.push(p);
+            else if (m.includes('alga') || m.includes('microalgae')) groups.algaculture.items.push(p);
+            else if (m.includes('fungi') || m.includes('mushroom')) groups.fungi.items.push(p);
+            else groups.other.items.push(p);
+          });
+
+          let html = '';
+          Object.values(groups).forEach(g => {
+            if (g.items.length > 0) {
+              html += `<optgroup label="${g.label}">`;
+              g.items.forEach(p => {
+                const sci = p.scientific_name ? ` (${p.scientific_name})` : '';
+                html += `<option value="${p.id}">${p.common_name || p.name}${sci}</option>`;
+              });
+              html += `</optgroup>`;
+            }
+          });
+
+          if (html) {
+            select.innerHTML = html;
+            if (currentVal) select.value = currentVal;
+          }
+        }
+      } catch (e) {
+        console.log('[Buyer] Using pre-configured 18 crops catalog.');
+      }
+    }
+
+    async function loadRequirements() {
+      const container = document.getElementById('buyer-reqs-container');
+      try {
+        const res = await AgriAPI.buyer.getRequirements();
+        const reqs = res.data || [];
+
+        if (reqs.length === 0) {
+          container.innerHTML = `<div class="empty-state p-6 text-center text-muted"><p>No active procurement requirements posted yet. Click <strong>Post New Requirement</strong> to start.</p></div>`;
+          return;
+        }
+
+        container.innerHTML = reqs.map(r => `
+          <div class="glass-card p-4 mb-3 flex items-center justify-between flex-wrap gap-4" style="background: rgba(255,255,255,0.85); border: 1.5px solid #CBD5E1;">
+            <div>
+              <div class="font-bold text-primary text-lg">${r.product_name}</div>
+              <div class="text-xs text-muted mt-1">
+                Required Volume: <strong>${r.required_monthly_kg} kg/month</strong> · Target Price: <strong>₹ ${r.target_price_inr_per_kg}/kg</strong> · Grade: <strong>${r.quality_grade || 'Standard A'}</strong>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="glass-badge badge-success"><i data-lucide="check-circle" style="width:12px; height:12px;"></i> Active Order</span>
+              <button class="glass-btn glass-btn-sm" style="color: var(--color-danger);" onclick="deleteReq(${r.id})">
+                <i data-lucide="trash-2" style="width:12px; height:12px;"></i> Delete
+              </button>
+            </div>
+          </div>
+        `).join('');
+        lucide.createIcons();
+      } catch (err) {
+        container.innerHTML = `<div class="text-danger p-4">Error loading orders: ${err.message}</div>`;
+      }
+    }
+
+    async function deleteReq(id) {
+      if (!confirm('Are you sure you want to remove this procurement requirement?')) return;
+      try {
+        await AgriAPI.buyer.deleteRequirement(id);
+        loadRequirements();
+      } catch (err) {
+        alert('Error removing requirement: ' + err.message);
+      }
+    }
+
+    async function submitReq() {
+      const crop = parseInt(document.getElementById('req-crop').value);
+      const qty = parseFloat(document.getElementById('req-qty').value);
+      const price = parseFloat(document.getElementById('req-price').value);
+      const grade = document.getElementById('req-grade').value;
+
+      try {
+        await AgriAPI.buyer.addRequirement({
+          product_id: crop,
+          required_quantity_kg_per_month: qty,
+          target_price_inr_per_kg: price,
+          quality_grade: grade
+        });
+        closeReqModal();
+        loadRequirements();
+      } catch (err) {
+        alert('Error posting requirement: ' + err.message);
+      }
+    }
+
+    syncCropsFromAPI();
+    loadRequirements();
+  </script>
+</body>
+</html>

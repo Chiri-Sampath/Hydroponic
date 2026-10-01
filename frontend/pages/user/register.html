@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AgriSmart AI — Create your free account">
+  <title>Register — AgriSmart AI</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <!-- AgriSmart AI CSS -->
+  <link rel="stylesheet" href="../../css/variables.css">
+  <link rel="stylesheet" href="../../css/glass.css">
+  <link rel="stylesheet" href="../../css/layout.css">
+  <link rel="stylesheet" href="../../css/responsive.css">
+</head>
+<body>
+<div class="auth-page">
+  <div class="glass-card auth-card" style="max-width: 480px;">
+    <!-- Logo -->
+    <a href="../../index.html" class="auth-logo">
+      <div class="auth-logo-icon">🌱</div>
+      <div>
+        <div style="font-size: var(--fs-xl); font-weight: var(--fw-bold); color: var(--text-primary);">
+          Agri<span style="color: var(--color-primary);">Smart AI</span>
+        </div>
+        <div style="font-size: var(--fs-xs); color: var(--text-muted);">Food Production Intelligence</div>
+      </div>
+    </a>
+
+    <h1 class="auth-title">Create your account</h1>
+    <p class="auth-subtitle">Select your role and get started in seconds</p>
+
+    <!-- Error alert -->
+    <div class="glass-alert glass-alert-danger mb-6" id="register-error" style="display:none;">
+      <i data-lucide="alert-circle" class="glass-alert-icon"></i>
+      <span id="register-error-msg">Registration error.</span>
+    </div>
+
+    <form class="auth-form" id="register-form" novalidate>
+      <!-- Full Name -->
+      <div class="glass-input-group">
+        <label class="glass-label" for="full_name">Full Name <span class="required">*</span></label>
+        <div class="glass-input-icon-wrap">
+          <i data-lucide="user" class="glass-input-icon"></i>
+          <input id="full_name" name="full_name" type="text" class="glass-input" placeholder="e.g. Ramesh Kumar" required>
+        </div>
+        <div class="glass-field-error" id="name-error" style="display:none;"></div>
+      </div>
+
+      <!-- Email -->
+      <div class="glass-input-group">
+        <label class="glass-label" for="email">Email Address <span class="required">*</span></label>
+        <div class="glass-input-icon-wrap">
+          <i data-lucide="mail" class="glass-input-icon"></i>
+          <input id="email" name="email" type="email" class="glass-input" placeholder="you@example.com" autocomplete="email" required>
+        </div>
+        <div class="glass-field-error" id="email-error" style="display:none;"></div>
+      </div>
+
+      <!-- Role Selection -->
+      <div class="glass-input-group">
+        <label class="glass-label" for="role">Account Type <span class="required">*</span></label>
+        <select id="role" name="role" class="glass-select" required>
+          <option value="general_user">🌱 Producer / Grower / Farm Planner</option>
+          <option value="buyer">🏢 Commercial Buyer (Wholesaler / Retailer)</option>
+        </select>
+        <div class="text-xs text-muted mt-1">Note: Administrator accounts are restricted and managed by platform governance.</div>
+      </div>
+
+      <!-- Password -->
+      <div class="glass-input-group">
+        <label class="glass-label" for="password">Password <span class="required">*</span> (min. 8 characters)</label>
+        <div class="glass-input-icon-wrap" style="position:relative;">
+          <i data-lucide="lock" class="glass-input-icon"></i>
+          <input id="password" name="password" type="password" class="glass-input" placeholder="••••••••" autocomplete="new-password" minlength="8" required style="padding-right: 3rem;">
+          <button
+            type="button"
+            id="toggle-password"
+            aria-label="Toggle password visibility"
+            style="position:absolute; right: var(--space-4); top: 50%; transform: translateY(-50%);
+                   background:none; border:none; color: var(--text-muted); cursor:pointer; display:flex;"
+          >
+            <i data-lucide="eye" id="eye-icon"></i>
+          </button>
+        </div>
+        <div class="glass-field-error" id="password-error" style="display:none;"></div>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="glass-btn glass-btn-primary glass-btn-lg" id="register-btn" style="width: 100%;">
+        <span id="register-btn-text">Create Account</span>
+        <span id="register-spinner" class="spinner" style="display:none; width:18px; height:18px;"></span>
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      Already have an account? <a href="login.html" class="auth-link font-semibold">Sign in</a>
+    </div>
+  </div>
+</div>
+
+<script src="../../js/config.js"></script>
+<script src="../../js/api.js"></script>
+<script src="../../js/interactive-bg.js"></script>
+<script>
+  lucide.createIcons();
+
+  // Toggle password visibility
+  document.getElementById('toggle-password').addEventListener('click', () => {
+    const input = document.getElementById('password');
+    const icon = document.getElementById('eye-icon');
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.setAttribute('data-lucide', 'eye-off');
+    } else {
+      input.type = 'password';
+      icon.setAttribute('data-lucide', 'eye');
+    }
+    lucide.createIcons();
+  });
+
+  document.getElementById('register-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('register-btn');
+    const spinner = document.getElementById('register-spinner');
+    const btnText = document.getElementById('register-btn-text');
+    const errorDiv = document.getElementById('register-error');
+    const errorMsg = document.getElementById('register-error-msg');
+
+    errorDiv.style.display = 'none';
+    document.getElementById('name-error').style.display = 'none';
+    document.getElementById('email-error').style.display = 'none';
+    document.getElementById('password-error').style.display = 'none';
+
+    const full_name = document.getElementById('full_name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const role = document.getElementById('role').value;
+    const password = document.getElementById('password').value;
+
+    let hasError = false;
+    if (!full_name) {
+      document.getElementById('name-error').textContent = 'Please enter your full name.';
+      document.getElementById('name-error').style.display = 'block';
+      hasError = true;
+    }
+    if (!email) {
+      document.getElementById('email-error').textContent = 'Please enter your email address.';
+      document.getElementById('email-error').style.display = 'block';
+      hasError = true;
+    }
+    if (!password || password.length < 8) {
+      document.getElementById('password-error').textContent = 'Password must be at least 8 characters.';
+      document.getElementById('password-error').style.display = 'block';
+      hasError = true;
+    }
+    if (hasError) return;
+
+    btn.disabled = true;
+    btnText.textContent = 'Creating account…';
+    spinner.style.display = 'block';
+
+    try {
+      const result = await AgriAPI.auth.register({ full_name, email, role, password });
+      if (result.success) {
+        localStorage.setItem(AgriConfig.TOKEN_KEY, result.access_token);
+        localStorage.setItem(AgriConfig.REFRESH_TOKEN_KEY, result.refresh_token);
+        localStorage.setItem(AgriConfig.USER_KEY, JSON.stringify(result.user));
+
+        const nextParam = new URLSearchParams(window.location.search).get('next');
+        if (nextParam && !nextParam.includes('register.html') && !nextParam.includes('login.html')) {
+          window.location.href = decodeURIComponent(nextParam);
+        } else if (role === 'buyer') {
+          window.location.href = '../buyer/dashboard.html';
+        } else {
+          window.location.href = '../user/dashboard.html';
+        }
+      } else {
+        throw new Error(result.error || 'Registration failed');
+      }
+    } catch (err) {
+      errorMsg.textContent = err.message || 'Registration failed. Please try again.';
+      errorDiv.style.display = 'flex';
+      lucide.createIcons();
+    } finally {
+      btn.disabled = false;
+      btnText.textContent = 'Create Account';
+      spinner.style.display = 'none';
+    }
+  });
+
+  ['full_name', 'email', 'password'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      errorDiv = document.getElementById('register-error');
+      if (errorDiv) errorDiv.style.display = 'none';
+    });
+  });
+</script>
+</body>
+</html>

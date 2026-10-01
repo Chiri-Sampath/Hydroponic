@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: agrismart-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn "app:create_app()" --workers 2 --threads 4 --timeout 120
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: JWT_ACCESS_TOKEN_EXPIRES_MINUTES
+        value: "43200"
+      - key: JWT_REFRESH_TOKEN_EXPIRES_DAYS
+        value: "90"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: agrismart-db
+          property: connectionString
+      - key: FRONTEND_URL
+        value: "*"
+      - key: RATELIMIT_DEFAULT
+        value: "100000 per day;10000 per hour"
+
+databases:
+  - name: agrismart-db
+    plan: free
+    databaseName: agrismart_db
+    user: agrismart

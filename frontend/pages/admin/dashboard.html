@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Governance — AgriSmart AI</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <!-- AgriSmart AI CSS -->
+  <link rel="stylesheet" href="../../css/variables.css?v=3.2.0">
+  <link rel="stylesheet" href="../../css/glass.css?v=3.2.0">
+  <link rel="stylesheet" href="../../css/layout.css?v=3.2.0">
+  <link rel="stylesheet" href="../../css/responsive.css?v=3.2.0">
+
+  <style>
+    /* Admin App Layout */
+    .admin-app-layout {
+      display: flex;
+      min-height: calc(100vh - 80px);
+      margin-top: 76px;
+      padding: 0 var(--space-4);
+      gap: var(--space-6);
+      max-width: 1440px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Admin Sidebar */
+    .admin-sidebar {
+      width: 280px;
+      flex-shrink: 0;
+      background: rgba(255, 255, 255, 0.75);
+      border: 1.5px solid rgba(255, 255, 255, 0.85);
+      border-radius: var(--radius-xl);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: var(--space-5);
+      box-shadow: 0 12px 35px rgba(20, 30, 40, 0.08);
+      height: fit-content;
+      position: sticky;
+      top: 90px;
+    }
+
+    .admin-sidebar-header {
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748B;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: var(--space-3);
+      padding-left: var(--space-2);
+    }
+
+    .admin-nav-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .admin-nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: 12px;
+      color: var(--text-primary);
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      border: 1px solid transparent;
+      background: transparent;
+      text-decoration: none;
+      width: 100%;
+      text-align: left;
+    }
+
+    .admin-nav-item:hover {
+      background: rgba(255, 255, 255, 0.90);
+      border-color: rgba(79, 134, 198, 0.30);
+      color: var(--color-primary);
+      transform: translateX(2px);
+    }
+
+    .admin-nav-item.active {
+      background: #FFFFFF;
+      border-color: #93C5FD;
+      color: #1D4ED8;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.10);
+      font-weight: 700;
+    }
+
+    .admin-nav-icon-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Main Dashboard Area */
+    .admin-main-area {
+      flex: 1;
+      min-width: 0;
+      padding-bottom: var(--space-12);
+    }
+
+    /* 4 Interactive Hub Cards */
+    .hub-metric-card {
+      cursor: pointer;
+      position: relative;
+      transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+      border: 1.5px solid rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.65);
+    }
+
+    .hub-metric-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(79, 134, 198, 0.50);
+      background: rgba(255, 255, 255, 0.90);
+      box-shadow: 0 12px 30px rgba(37, 99, 235, 0.12);
+    }
+
+    .hub-metric-card.active {
+      background: #FFFFFF;
+      border-color: #3B82F6;
+      box-shadow: 0 10px 28px rgba(37, 99, 235, 0.18), inset 0 0 0 1px #3B82F6;
+    }
+
+    .hub-metric-card.active::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 24px;
+      height: 4px;
+      background: var(--color-primary);
+      border-radius: 4px;
+    }
+
+    /* Detail View Container */
+    .dashboard-detail-view {
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .dashboard-detail-view.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Account Menu Dropdown */
+    .account-menu-container {
+      position: relative;
+    }
+
+    .account-dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      width: 260px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1.5px solid rgba(255, 255, 255, 0.95);
+      border-radius: 16px;
+      backdrop-filter: blur(24px);
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.15);
+      padding: 8px;
+      z-index: 1000;
+      display: none;
+      animation: dropdownSlide 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .account-dropdown.show {
+      display: block;
+    }
+
+    @keyframes dropdownSlide {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .account-dropdown-header {
+      padding: 10px 12px;
+      border-bottom: 1px solid #E2E8F0;
+      margin-bottom: 6px;
+    }
+
+    .account-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      color: #1E293B;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+    }
+
+    .account-dropdown-item:hover {
+      background: #F1F5F9;
+      color: #1D4ED8;
+    }
+
+    .account-dropdown-divider {
+      height: 1px;
+      background: #E2E8F0;
+      margin: 6px 0;
+    }
+
+    /* Modal / Drawer for Secondary Tools */
+    .admin-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .admin-modal-overlay.show {
+      display: flex;
+    }
+
+    .admin-modal-box {
+      width: 100%;
+      max-width: 960px;
+      max-height: 85vh;
+      background: rgba(255, 255, 255, 0.98);
+      border: 1.5px solid rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: modalZoom 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes modalZoom {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .admin-modal-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid #E2E8F0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #F8FAFC;
+    }
+
+    .admin-modal-body {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    @media (max-width: 1024px) {
+      .admin-app-layout {
+        flex-direction: column;
+      }
+      .admin-sidebar {
+        width: 100%;
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Glass Navbar -->
+  <nav class="glass-navbar">
+    <a href="../../index.html" class="navbar-brand">
+      <div class="navbar-logo">🌱</div>
+      <div class="navbar-brand-text">Agri<span>Smart AI</span> <span class="text-xs text-muted font-bold" style="background: rgba(79,134,198,0.12); color: var(--color-primary); padding: 2px 8px; border-radius: 6px; margin-left: 6px;">Admin Governance</span></div>
+    </a>
+
+    <div class="navbar-spacer"></div>
+
+    <div class="flex items-center gap-3">
+      <!-- Quick Mode Switcher: Switch to User / Grower Dashboard -->
+      <a href="../user/dashboard.html" class="glass-btn glass-btn-sm" style="border: 1.5px solid #6EE7B7; color: #065F46; background: rgba(236, 253, 245, 0.95); font-weight: 700; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; padding: 6px 12px; border-radius: 10px;" title="Switch to Grower / Producer Dashboard">
+        <i data-lucide="sprout" style="width: 15px; height: 15px; color: #059669;"></i>
+        <span>User Dashboard</span>
+      </a>
+
+      <!-- Account Menu Dropdown Button -->
+      <div class="account-menu-container">
+        <button id="btn-account-menu" class="navbar-user-btn" style="border: 1.5px solid #93C5FD; background: #FFFFFF; cursor: pointer;" aria-haspopup="true" aria-expanded="false">
+          <div class="navbar-avatar user-avatar-initial" style="background: var(--color-primary); color: #FFF;">A</div>
+          <span class="user-display-name font-semibold">Administrator</span>
+          <span class="glass-badge badge-danger" style="font-size: 11px;">Admin Role</span>
+          <i data-lucide="chevron-down" style="width: 14px; height: 14px; color: #64748B;"></i>
+        </button>
+
+        <!-- Account Dropdown Menu with Secondary Features -->
+        <div id="account-dropdown-menu" class="account-dropdown">
+          <div class="account-dropdown-header">
+            <div class="font-bold text-sm user-display-name" style="color: #0F172A;">Admin Console</div>
+            <div class="text-xs text-muted" id="adm-current-email">admin@agrismart.ai</div>
+          </div>
+          
+          <!-- Mode Switcher: Switch to Producer / General User Account -->
+          <a href="../user/dashboard.html" class="account-dropdown-item font-semibold" style="color: #059669; background: #ECFDF5; border: 1px solid #A7F3D0; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; text-decoration: none;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <i data-lucide="repeat" style="width: 15px; height: 15px; color: #059669;"></i>
+              <span>Switch to User Account</span>
+            </div>
+            <span class="glass-badge badge-success" style="font-size: 10px; padding: 2px 6px;">Grower View</span>
+          </a>
+
+          <div class="account-dropdown-divider"></div>
+          <div class="text-xs font-bold text-muted px-2 py-1" style="text-transform: uppercase; letter-spacing: 0.05em; font-size: 10px;">Admin Tools</div>
+
+          <button class="account-dropdown-item font-semibold" style="color: #1D4ED8;" onclick="openAdminFeatureModal('add-admin')">
+            <i data-lucide="user-plus" style="width: 15px; height: 15px; color: #2563EB;"></i>
+            + Add Admin
+          </button>
+          <button class="account-dropdown-item" onclick="openAdminFeatureModal('audit')">
+            <i data-lucide="file-text" style="width: 15px; height: 15px; color: #059669;"></i>
+            Security & Audit Logs
+          </button>
+          <button class="account-dropdown-item" onclick="openAdminFeatureModal('settings')">
+            <i data-lucide="settings" style="width: 15px; height: 15px; color: #3B82F6;"></i>
+            System Configuration
+          </button>
+          <button class="account-dropdown-item" onclick="openAdminFeatureModal('sources')">
+            <i data-lucide="database" style="width: 15px; height: 15px; color: #8B5CF6;"></i>
+            Data Sources Registry
+          </button>
+          <button class="account-dropdown-item" onclick="openAdminFeatureModal('crops')">
+            <i data-lucide="sprout" style="width: 15px; height: 15px; color: #10B981;"></i>
+            All Cultivation Crops & User Projects
+          </button>
+          <button class="account-dropdown-item" onclick="openAdminFeatureModal('labs')">
+            <i data-lucide="flask-conical" style="width: 15px; height: 15px; color: #D97706;"></i>
+            Laboratories Directory
+          </button>
+
+          <div class="account-dropdown-divider"></div>
+
+          <button class="account-dropdown-item btn-logout" style="color: #DC2626; width: 100%;">
+            <i data-lucide="log-out" style="width: 15px; height: 15px;"></i>
+            Sign Out
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Admin Layout Container -->
+  <div class="admin-app-layout">
+
+    <!-- Sidebar: Add Admin Button + Main 4 Dashboards + Secondary Side Options -->
+    <aside class="admin-sidebar">
+      
+      <!-- Primary Side Action: + Add Admin Button -->
+      <button class="glass-btn glass-btn-primary mb-6" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 11px 16px; font-weight: 700; border-radius: 12px; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.20);" onclick="openAdminFeatureModal('add-admin')">
+        <i data-lucide="user-plus" style="width: 17px; height: 17px;"></i>
+        <span>+ Add Admin</span>
+      </button>
+
+      <div class="admin-sidebar-header">Core Dashboards</div>
+      <ul class="admin-nav-list mb-6">
+        <li>
+          <button class="admin-nav-item active" id="nav-hub-users" onclick="switchDashboardHub('users')">
+            <div class="admin-nav-icon-label">
+              <i data-lucide="users" style="width: 16px; height: 16px; color: #2563EB;"></i>
+              <span>Total Users</span>
+            </div>
+            <span class="glass-badge badge-primary" id="side-users-badge">--</span>
+          </button>
+        </li>
+        <li>
+          <button class="admin-nav-item" id="nav-hub-projects" onclick="switchDashboardHub('projects')">
+            <div class="admin-nav-icon-label">
+              <i data-lucide="folder-kanban" style="width: 16px; height: 16px; color: #16A34A;"></i>
+              <span>Active Projects</span>
+            </div>
+            <span class="glass-badge badge-success" id="side-projects-badge">--</span>
+          </button>
+        </li>
+        <li>
+          <button class="admin-nav-item" id="nav-hub-recommendations" onclick="switchDashboardHub('recommendations')">
+            <div class="admin-nav-icon-label">
+              <i data-lucide="sparkles" style="width: 16px; height: 16px; color: #7C3AED;"></i>
+              <span>AI Recommendations</span>
+            </div>
+            <span class="glass-badge badge-lime" id="side-runs-badge">--</span>
+          </button>
+        </li>
+        <li>
+          <button class="admin-nav-item" id="nav-hub-reports" onclick="switchDashboardHub('reports')">
+            <div class="admin-nav-icon-label">
+              <i data-lucide="clipboard-check" style="width: 16px; height: 16px; color: #D97706;"></i>
+              <span>Lab Reports</span>
+            </div>
+            <span class="glass-badge badge-warning" id="side-reports-badge">--</span>
+          </button>
+        </li>
+      </ul>
+
+      <div class="admin-sidebar-header">Side Tools & Governance</div>
+      <ul class="admin-nav-list">
+        <li>
+          <button class="admin-nav-item" onclick="openAdminFeatureModal('add-admin')">
+            <div class="admin-nav-icon-label">
+              <i data-lucide="shield-plus" style="width: 16px; height: 16px; color: #2563EB;"></i>
+              <span>Add Admin Access</span>
+            </div>
+            <i data-lucide="arrow-up-right" style="width: 14px; height: 14px; color: #94A3B8;"></i>
+          </button>
+        </li>
+        <li>
+          <button class="admin-nav-item" onclick="openAdminFeatureModal('audit')">
+            <div class="admin-nav-icon-label">
+              <i data-lucide="shield" style="width: 16px; height: 16px; color: #059669;"></i>
+              <span>Audit Trail</span>
+            </div>
+            <i data-lucide="arrow-up-right" style="width: 14px; height: 14px; color: #94A3B8;"></i>
+          </button>
+        </li>
+        <li>
+          <button class="admin-nav-item" onclick="openAdminFeatureModal('settings')">
+            <div class="admin-nav-icon-label">
+              <i data-lucide="sliders" style="width: 16px; height: 16px; color: #3B82F6;"></i>
+              <span>System Settings</span>
+            </div>
+            <i data-lucide="arrow-up-right" style="width: 14px; height: 14px; color: #94A3B8;"></i>
+          </button>
+        </li>
+        <li>
+          <button class="admin-nav-item" onclick="openAdminFeatureModal('sources')">
+            <div class="admin-nav-icon-label">
+              <i data-lucide="globe" style="width: 16px; height: 16px; color: #8B5CF6;"></i>
+              <span>Data Sources</span>
+            </div>
+            <i data-lucide="arrow-up-right" style="width: 14px; height: 14px; color: #94A3B8;"></i>
+          </button>
+        </li>
+        <li>
+          <button class="admin-nav-item" onclick="openAdminFeatureModal('crops')">
+            <div class="admin-nav-icon-label">
+              <i data-lucide="sprout" style="width: 16px; height: 16px; color: #10B981;"></i>
+              <span>All Cultivation Crops</span>
+            </div>
+            <i data-lucide="arrow-up-right" style="width: 14px; height: 14px; color: #94A3B8;"></i>
+          </button>
+        </li>
+        <li>
+          <button class="admin-nav-item" onclick="openAdminFeatureModal('labs')">
+            <div class="admin-nav-icon-label">
+              <i data-lucide="test-tube-2" style="width: 16px; height: 16px; color: #D97706;"></i>
+              <span>Testing Labs</span>
+            </div>
+            <i data-lucide="arrow-up-right" style="width: 14px; height: 14px; color: #94A3B8;"></i>
+          </button>
+        </li>
+      </ul>
+
+      <!-- Mode Switcher in Admin Sidebar -->
+      <div style="border-top: 1px solid rgba(16, 185, 129, 0.25); padding-top: 14px; margin-top: 16px;">
+        <div class="admin-sidebar-header" style="color: #059669; font-weight: 700;">Grower Mode</div>
+        <a href="../user/dashboard.html" class="admin-nav-item" style="color: #065F46; font-weight: 700; background: rgba(236, 253, 245, 0.85); border: 1.5px solid #A7F3D0; border-radius: 10px; text-decoration: none; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between;">
+          <div class="admin-nav-icon-label">
+            <i data-lucide="sprout" style="width: 16px; height: 16px; color: #059669;"></i>
+            <span>Switch to User Dashboard</span>
+          </div>
+          <i data-lucide="arrow-right" style="width: 14px; height: 14px; color: #059669;"></i>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content Area: Exclusively the 4 Core Dashboard Hubs -->
+    <main class="admin-main-area">
+      
+      <div class="page-header mb-6">
+        <h1 class="page-title">Admin Operations & Core Governance</h1>
+        <p class="page-subtitle">Interactive overview of platform users, active projects, AI recommendation models, and quality reports.</p>
+      </div>
+
+      <!-- 4 Core Interactive Metric Cards -->
+      <div class="grid grid-4 mb-8">
+        
+        <!-- Metric 1: Total Users -->
+        <div class="glass-card metric-card hub-metric-card active" id="card-hub-users" onclick="switchDashboardHub('users')">
+          <div class="flex items-center justify-between mb-2">
+            <span class="metric-card-label">Total Users</span>
+            <span class="glass-badge badge-primary" style="font-size: 11px;">👥 User Hub</span>
+          </div>
+          <div class="metric-card-value text-primary" id="adm-users-count">--</div>
+          <div class="text-xs text-muted mt-2 flex items-center gap-1 font-semibold">
+            <i data-lucide="check" style="width: 12px; height: 12px; color: #2563EB;"></i>
+            Click to manage platform users
+          </div>
+        </div>
+
+        <!-- Metric 2: Active Projects -->
+        <div class="glass-card metric-card hub-metric-card" id="card-hub-projects" onclick="switchDashboardHub('projects')">
+          <div class="flex items-center justify-between mb-2">
+            <span class="metric-card-label">Active Projects</span>
+            <span class="glass-badge badge-success" style="font-size: 11px;">📂 Projects Hub</span>
+          </div>
+          <div class="metric-card-value text-green" id="adm-projects-count">--</div>
+          <div class="text-xs text-muted mt-2 flex items-center gap-1 font-semibold">
+            <i data-lucide="eye" style="width: 12px; height: 12px; color: #16A34A;"></i>
+            Click to inspect projects & farms
+          </div>
+        </div>
+
+        <!-- Metric 3: AI Recommendation Runs -->
+        <div class="glass-card metric-card hub-metric-card" id="card-hub-recommendations" onclick="switchDashboardHub('recommendations')">
+          <div class="flex items-center justify-between mb-2">
+            <span class="metric-card-label">AI Recommendation Runs</span>
+            <span class="glass-badge badge-lime" style="font-size: 11px;">🧠 AI Models Hub</span>
+          </div>
+          <div class="metric-card-value text-lime" id="adm-runs-count">--</div>
+          <div class="text-xs text-muted mt-2 flex items-center gap-1 font-semibold">
+            <i data-lucide="sparkles" style="width: 12px; height: 12px; color: #65A30D;"></i>
+            Click to view model run logs
+          </div>
+        </div>
+
+        <!-- Metric 4: Lab Reports Processed -->
+        <div class="glass-card metric-card hub-metric-card" id="card-hub-reports" onclick="switchDashboardHub('reports')">
+          <div class="flex items-center justify-between mb-2">
+            <span class="metric-card-label">Lab Reports Processed</span>
+            <span class="glass-badge badge-warning" style="font-size: 11px;">🔬 Quality Hub</span>
+          </div>
+          <div class="metric-card-value text-warning" id="adm-reports-count">--</div>
+          <div class="text-xs text-muted mt-2 flex items-center gap-1 font-semibold">
+            <i data-lucide="clipboard-check" style="width: 12px; height: 12px; color: #D97706;"></i>
+            Click to inspect test passports
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ========================================================================= -->
+      <!-- DETAIL VIEW 1: TOTAL USERS MANAGEMENT HUB -->
+      <!-- ========================================================================= -->
+      <section id="view-hub-users" class="dashboard-detail-view active">
+        <!-- Users Management Table -->
+        <div class="glass-card p-6">
+          <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+            <div>
+              <h3 class="text-xl font-bold">Platform Users Management</h3>
+              <p class="text-xs text-muted">All registered producers, enterprise buyers, and platform administrators</p>
+            </div>
+            <div class="flex items-center gap-3 flex-wrap">
+              <input
+                id="search-users-input"
+                type="text"
+                class="glass-input"
+                placeholder="🔍 Search users by name or email…"
+                style="width: 250px; padding: 7px 12px; font-size: 13px; background: #FFFFFF;"
+                oninput="filterUsersTable()"
+              >
+              <button class="glass-btn glass-btn-primary glass-btn-sm" style="padding: 7px 14px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;" onclick="openAdminFeatureModal('add-admin')">
+                <i data-lucide="user-plus" style="width: 14px; height: 14px;"></i>
+                + Add Admin
+              </button>
+            </div>
+          </div>
+
+          <div class="glass-table-wrap">
+            <table class="glass-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Email & Account</th>
+                  <th>Full Name</th>
+                  <th>Role</th>
+                  <th>Cultivation Projects</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-users-table">
+                <tr><td colspan="7" class="text-center py-6 text-muted">Loading users…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- DETAIL VIEW 2: ACTIVE PROJECTS HUB -->
+      <!-- ========================================================================= -->
+      <section id="view-hub-projects" class="dashboard-detail-view">
+        <div class="glass-card p-6">
+          <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+            <div>
+              <h3 class="text-xl font-bold">All Cultivation Projects</h3>
+              <p class="text-xs text-muted">Active, planning, and operational cultivation facilities across the platform</p>
+            </div>
+            <div>
+              <input
+                id="search-projects-input"
+                type="text"
+                class="glass-input"
+                placeholder="🔍 Search projects, locations or owners…"
+                style="width: 280px; padding: 7px 12px; font-size: 13px; background: #FFFFFF;"
+                oninput="filterProjectsTable()"
+              >
+            </div>
+          </div>
+
+          <!-- Active Filter Banner (Shown when filtered by specific user) -->
+          <div id="projects-active-filter-bar" style="display: none; background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.25); border-radius: 10px; padding: 10px 16px; margin-bottom: 16px; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #1D4ED8; font-weight: 600;">
+              <i data-lucide="filter" style="width: 15px; height: 15px;"></i>
+              <span>Filtered by User: <strong id="projects-active-filter-email" style="font-family: monospace; background: rgba(255,255,255,0.9); padding: 2px 8px; border-radius: 6px; border: 1px solid #BFDBFE;"></strong></span>
+            </div>
+            <button class="glass-btn glass-btn-sm" onclick="clearProjectsUserFilter()" style="padding: 4px 10px; font-size: 12px; font-weight: 600;">
+              <i data-lucide="x" style="width: 12px; height: 12px;"></i> Clear Filter
+            </button>
+          </div>
+
+          <div class="glass-table-wrap">
+            <table class="glass-table">
+              <thead>
+                <tr>
+                  <th>Project ID</th>
+                  <th>Project Name & Description</th>
+                  <th>Owner / Producer</th>
+                  <th>Location</th>
+                  <th>Area</th>
+                  <th>Batches</th>
+                  <th>Status</th>
+                  <th>Created Date</th>
+                </tr>
+              </thead>
+              <tbody id="admin-projects-table">
+                <tr><td colspan="8" class="text-center py-6 text-muted">Loading projects…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- DETAIL VIEW 3: AI RECOMMENDATION RUNS HUB -->
+      <!-- ========================================================================= -->
+      <section id="view-hub-recommendations" class="dashboard-detail-view">
+        <div class="glass-card p-6">
+          <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+            <div>
+              <h3 class="text-xl font-bold">AI Recommendation Model Runs</h3>
+              <p class="text-xs text-muted">Multi-objective crop suitability runs generated for platform facilities</p>
+            </div>
+            <div>
+              <input
+                id="search-runs-input"
+                type="text"
+                class="glass-input"
+                placeholder="🔍 Search recommendation runs or crops…"
+                style="width: 280px; padding: 7px 12px; font-size: 13px; background: #FFFFFF;"
+                oninput="filterRunsTable()"
+              >
+            </div>
+          </div>
+
+          <div class="glass-table-wrap">
+            <table class="glass-table">
+              <thead>
+                <tr>
+                  <th>Run ID</th>
+                  <th>Target Project</th>
+                  <th>Owner</th>
+                  <th>Objective Type</th>
+                  <th>Top Recommended Crop</th>
+                  <th>Suitability Score</th>
+                  <th>Status</th>
+                  <th>Run Timestamp</th>
+                </tr>
+              </thead>
+              <tbody id="admin-recommendations-table">
+                <tr><td colspan="8" class="text-center py-6 text-muted">Loading recommendation runs…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- DETAIL VIEW 4: LAB REPORTS PROCESSED HUB -->
+      <!-- ========================================================================= -->
+      <section id="view-hub-reports" class="dashboard-detail-view">
+        <div class="glass-card p-6">
+          <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+            <div>
+              <h3 class="text-xl font-bold">Processed Laboratory Reports</h3>
+              <p class="text-xs text-muted">Quality passports and third-party laboratory verification certificates</p>
+            </div>
+            <div>
+              <input
+                id="search-reports-input"
+                type="text"
+                class="glass-input"
+                placeholder="🔍 Search batch codes, labs or crops…"
+                style="width: 280px; padding: 7px 12px; font-size: 13px; background: #FFFFFF;"
+                oninput="filterReportsTable()"
+              >
+            </div>
+          </div>
+
+          <div class="glass-table-wrap">
+            <table class="glass-table">
+              <thead>
+                <tr>
+                  <th>Report ID</th>
+                  <th>Batch Code</th>
+                  <th>Product / Crop</th>
+                  <th>Project & Owner</th>
+                  <th>Testing Laboratory</th>
+                  <th>Status</th>
+                  <th>Report No.</th>
+                  <th>Test Date</th>
+                </tr>
+              </thead>
+              <tbody id="admin-reports-table">
+                <tr><td colspan="8" class="text-center py-6 text-muted">Loading laboratory reports…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: USER CULTIVATION PROJECTS INSPECTOR                                -->
+  <!-- ========================================================================= -->
+  <div id="user-projects-modal" class="admin-modal-overlay">
+    <div class="admin-modal-box" style="max-width: 860px;">
+      <div class="admin-modal-header" style="background: linear-gradient(135deg, rgba(37,99,235,0.06), rgba(16,185,129,0.06));">
+        <div class="flex items-center gap-3">
+          <div style="width: 38px; height: 38px; border-radius: 10px; background: #2563EB; color: #FFF; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(37,99,235,0.25);">
+            <i data-lucide="sprout" style="width: 20px; height: 20px;"></i>
+          </div>
+          <div>
+            <h3 id="upm-user-title" class="font-bold text-lg" style="margin: 0; color: var(--text-primary);">User Cultivation Facilities</h3>
+            <p id="upm-user-subtitle" class="text-xs text-muted" style="margin: 0;">Linked active projects and agronomic details for this user</p>
+          </div>
+        </div>
+        <button class="glass-btn glass-btn-sm" onclick="closeUserProjectsModal()" style="border-radius: 50%; width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;">
+          <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+        </button>
+      </div>
+      <div class="admin-modal-body" id="upm-content" style="padding: 20px;">
+        <!-- Injected dynamically -->
+      </div>
+      <div style="padding: 14px 24px; border-top: 1px solid #E2E8F0; background: #F8FAFC; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+        <span id="upm-footer-count" class="text-xs text-muted font-semibold">0 Projects Linked</span>
+        <div class="flex gap-2">
+          <button type="button" class="glass-btn" onclick="closeUserProjectsModal()">Close</button>
+          <button type="button" class="glass-btn glass-btn-primary" id="upm-btn-view-all" onclick="filterActiveProjectsFromModal()">
+            <i data-lucide="folder-kanban" style="width: 14px; height: 14px;"></i> View in Active Projects Hub
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL / DRAWER FOR SECONDARY SIDE & ACCOUNT FEATURES -->
+  <!-- ========================================================================= -->
+  <div id="admin-feature-modal" class="admin-modal-overlay">
+    <div class="admin-modal-box">
+      <div class="admin-modal-header">
+        <div class="flex items-center gap-3">
+          <div id="modal-feature-icon" style="width: 34px; height: 34px; border-radius: 10px; background: rgba(79, 134, 198, 0.15); display: flex; align-items: center; justify-content: center; color: var(--color-primary);">
+            <i data-lucide="shield" style="width: 18px; height: 18px;"></i>
+          </div>
+          <div>
+            <h3 id="modal-feature-title" class="font-bold text-lg" style="margin: 0; color: var(--text-primary);">Security Audit Logs</h3>
+            <p id="modal-feature-desc" class="text-xs text-muted" style="margin: 0;">Comprehensive system audit records</p>
+          </div>
+        </div>
+        <button class="glass-btn glass-btn-sm" onclick="closeAdminFeatureModal()" style="border-radius: 50%; width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;">
+          <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+        </button>
+      </div>
+      <div class="admin-modal-body" id="modal-feature-content">
+        <!-- Injected dynamically based on selected feature -->
+      </div>
+    </div>
+  </div>
+
+  <script src="../../js/config.js?v=3.2.0"></script>
+  <script src="../../js/api.js?v=3.2.0"></script>
+  <script src="../../js/auth.js?v=3.2.0"></script>
+  <script src="../../js/interactive-bg.js?v=3.2.0"></script>
+  <script src="../../js/navigation.js?v=3.2.0"></script>
+  <script>
+    lucide.createIcons();
+    AuthGuard.requireAuth(['admin']);
+    AuthGuard.initUserNavbar();
+
+    // Default Datasets (Empty defaults — live data loads dynamically from registered users)
+    const DEFAULT_PROJECTS = [];
+    const DEFAULT_RECS = [];
+    const DEFAULT_REPORTS = [];
+
+    // Data Cache
+    let cachedUsers = [];
+    let cachedProjects = [];
+    let cachedRuns = [];
+    let cachedReports = [];
+
+    // Current active hub
+    let activeHub = 'users';
+
+    // Switch Dashboard Hub (4 Core Dashboards)
+    function switchDashboardHub(hubId) {
+      activeHub = hubId;
+
+      ['users', 'projects', 'recommendations', 'reports'].forEach(id => {
+        const navEl = document.getElementById(`nav-hub-${id}`);
+        const cardEl = document.getElementById(`card-hub-${id}`);
+        const viewEl = document.getElementById(`view-hub-${id}`);
+
+        if (id === hubId) {
+          if (navEl) navEl.classList.add('active');
+          if (cardEl) cardEl.classList.add('active');
+          if (viewEl) viewEl.classList.add('active');
+        } else {
+          if (navEl) navEl.classList.remove('active');
+          if (cardEl) cardEl.classList.remove('active');
+          if (viewEl) viewEl.classList.remove('active');
+        }
+      });
+
+      lucide.createIcons();
+    }
+
+    // Load Admin Data
+    async function loadAdminData() {
+      try {
+        const user = AgriAPI.getCurrentUser();
+        if (user && user.email) {
+          document.getElementById('adm-current-email').textContent = user.email;
+        }
+
+        // 1. Dashboard Metrics
+        let totalUsers = 0, totalProjects = 0, totalRuns = 0, totalReports = 0;
+        try {
+          const dashRes = (AgriAPI.admin && typeof AgriAPI.admin.getDashboard === 'function')
+            ? await AgriAPI.admin.getDashboard()
+            : await AgriAPI.get('/admin/dashboard');
+
+          if (dashRes && dashRes.success && dashRes.data && dashRes.data.metrics) {
+            const m = dashRes.data.metrics;
+            totalUsers = (typeof m.total_users === 'number') ? m.total_users : totalUsers;
+            totalProjects = (typeof m.total_projects === 'number') ? m.total_projects : totalProjects;
+            totalRuns = (typeof m.total_recommendations === 'number') ? m.total_recommendations : totalRuns;
+            totalReports = (typeof m.total_lab_reports === 'number') ? m.total_lab_reports : totalReports;
+          }
+        } catch (e) {
+          console.warn('Using metric fallbacks:', e);
+        }
+
+        document.getElementById('adm-users-count').textContent = totalUsers;
+        document.getElementById('side-users-badge').textContent = totalUsers;
+
+        document.getElementById('adm-projects-count').textContent = totalProjects;
+        document.getElementById('side-projects-badge').textContent = totalProjects;
+
+        document.getElementById('adm-runs-count').textContent = totalRuns;
+        document.getElementById('side-runs-badge').textContent = totalRuns;
+
+        document.getElementById('adm-reports-count').textContent = totalReports;
+        document.getElementById('side-reports-badge').textContent = totalReports;
+
+        // 2. Load Core Hubs Data
+        await Promise.allSettled([
+          loadUsersList(),
+          loadProjectsList(),
+          loadRecommendationsList(),
+          loadLabReportsList()
+        ]);
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error('Admin initialization error:', err);
+      }
+    }
+
+    // 1. Load Users List
+    async function loadUsersList() {
+      try {
+        let uRes;
+        if (AgriAPI.admin && typeof AgriAPI.admin.getUsers === 'function') {
+          uRes = await AgriAPI.admin.getUsers();
+        } else if (typeof AgriAPI.get === 'function') {
+          uRes = await AgriAPI.get('/admin/users');
+        }
+
+        if (uRes && uRes.success && Array.isArray(uRes.data)) {
+          cachedUsers = uRes.data;
+        } else if (AgriAPI.DEFAULT_ACCOUNTS) {
+          cachedUsers = AgriAPI.DEFAULT_ACCOUNTS;
+        }
+      } catch (err) {
+        console.warn('Error loading users:', err);
+        cachedUsers = AgriAPI.DEFAULT_ACCOUNTS || [];
+      }
+      document.getElementById('adm-users-count').textContent = cachedUsers.length;
+      document.getElementById('side-users-badge').textContent = cachedUsers.length;
+      renderUsersTable(cachedUsers);
+    }
+
+    let modalSelectedUserEmail = null;
+
+    function renderUsersTable(users) {
+      const tbody = document.getElementById('admin-users-table');
+      if (!users || !users.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-6 text-muted">No users found.</td></tr>';
+        return;
+      }
+
+      const currentUser = AgriAPI.getCurrentUser() || {};
+      const currentEmail = (currentUser.email || '').toLowerCase().trim();
+      const mainAdminEmails = ['admin@agrismart.ai', 'admin@agrismart.local', 'admin@test.local'];
+
+      tbody.innerHTML = users.map(u => {
+        const uEmail = (u.email || '').toLowerCase().trim();
+        const userProjs = (cachedProjects || []).filter(p =>
+          p.user_id === u.id || (p.owner_email && p.owner_email.toLowerCase() === uEmail)
+        );
+        const isRootAdmin = Boolean(u.is_main_admin || mainAdminEmails.includes(uEmail));
+        const isSelf = (currentEmail === uEmail);
+
+        return `
+        <tr>
+          <td><span class="font-mono text-xs text-muted">#${u.id}</span></td>
+          <td>
+            <div class="font-semibold text-primary">${u.email}</div>
+          </td>
+          <td>${u.full_name || '—'}</td>
+          <td>
+            <span class="glass-badge ${u.role === 'admin' ? (isRootAdmin ? 'badge-danger' : 'badge-primary') : (u.role === 'buyer' ? 'badge-info' : 'badge-primary')}">
+              ${u.role === 'admin' ? (isRootAdmin ? '👑 Main Admin' : '🛡️ Admin') : (u.role_display || u.role)}
+            </span>
+          </td>
+          <td>
+            ${userProjs.length > 0 ? `
+              <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start;">
+                <button class="glass-btn glass-btn-sm" style="background: rgba(37,99,235,0.08); border-color: rgba(37,99,235,0.25); color: #1D4ED8; font-weight: 700; font-size: 11px; padding: 4px 10px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); cursor: pointer;" onclick="viewUserProjectsModal('${u.email}')" title="Inspect Cultivation Projects">
+                  <i data-lucide="sprout" style="width: 13px; height: 13px; color: #16A34A;"></i>
+                  <span>${userProjs.length} ${userProjs.length === 1 ? 'Project' : 'Projects'}</span>
+                  <i data-lucide="chevron-right" style="width: 12px; height: 12px; opacity: 0.6;"></i>
+                </button>
+                <span class="text-xs text-muted" style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px;">
+                  ${userProjs[0].name}${userProjs.length > 1 ? ` (+${userProjs.length - 1} more)` : ''}
+                </span>
+              </div>
+            ` : `
+              <span class="text-xs text-muted" style="opacity: 0.6;">0 Projects</span>
+            `}
+          </td>
+          <td><span class="glass-badge ${u.status === 'active' ? 'badge-success' : 'badge-danger'}">${u.status || 'active'}</span></td>
+          <td>
+            <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+              ${u.role !== 'admin' ? `
+                <button class="glass-btn glass-btn-sm glass-btn-primary" style="padding: 4px 8px; font-size: 11px;" onclick="promoteUserToAdmin('${u.email}')" title="Grant Administrator Role">
+                  <i data-lucide="shield-check" style="width: 12px; height: 12px;"></i>
+                  Make Admin
+                </button>
+                <button class="glass-btn glass-btn-sm ${u.status === 'active' ? 'glass-btn-danger' : 'glass-btn-primary'}" style="padding: 4px 8px; font-size: 11px;" onclick="toggleStatus(${u.id}, '${u.status === 'active' ? 'suspended' : 'active'}')">
+                  ${u.status === 'active' ? 'Suspend' : 'Activate'}
+                </button>
+              ` : (isRootAdmin ? `
+                <span class="glass-badge badge-danger" style="font-weight: 700; font-size: 11px; padding: 4px 8px;">👑 Root Admin</span>
+              ` : (isSelf ? `
+                <span class="text-xs font-semibold" style="color: #64748B;">👤 Current Account</span>
+              ` : `
+                <button class="glass-btn glass-btn-sm glass-btn-danger" style="padding: 4px 8px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;" onclick="revokeAdminRole('${u.email}')" title="Remove as Admin and revert to General User">
+                  <i data-lucide="shield-minus" style="width: 12px; height: 12px;"></i>
+                  Remove as Admin
+                </button>
+                <button class="glass-btn glass-btn-sm ${u.status === 'active' ? 'glass-btn-danger' : 'glass-btn-primary'}" style="padding: 4px 8px; font-size: 11px;" onclick="toggleStatus(${u.id}, '${u.status === 'active' ? 'suspended' : 'active'}')">
+                  ${u.status === 'active' ? 'Suspend' : 'Activate'}
+                </button>
+              `))}
+            </div>
+          </td>
+        </tr>
+      `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function filterUsersTable() {
+      const q = (document.getElementById('search-users-input').value || '').toLowerCase().trim();
+      const filtered = cachedUsers.filter(u =>
+        (u.email && u.email.toLowerCase().includes(q)) ||
+        (u.full_name && u.full_name.toLowerCase().includes(q)) ||
+        (u.role && u.role.toLowerCase().includes(q))
+      );
+      renderUsersTable(filtered);
+    }
+
+    // 2. Load Projects List (Only real projects created by registered users)
+    async function loadProjectsList() {
+      try {
+        let pRes;
+        if (AgriAPI.admin && typeof AgriAPI.admin.getProjects === 'function') {
+          pRes = await AgriAPI.admin.getProjects();
+        } else if (typeof AgriAPI.get === 'function') {
+          pRes = await AgriAPI.get('/admin/projects');
+        }
+
+        if (pRes && pRes.success && Array.isArray(pRes.data)) {
+          cachedProjects = pRes.data;
+        } else {
+          cachedProjects = [];
+        }
+      } catch (err) {
+        console.warn('Error loading projects:', err);
+        cachedProjects = [];
+      }
+      document.getElementById('adm-projects-count').textContent = cachedProjects.length;
+      document.getElementById('side-projects-badge').textContent = cachedProjects.length;
+      renderProjectsTable(cachedProjects);
+      // Re-render users table so project badges sync up
+      renderUsersTable(cachedUsers);
+    }
+
+    function renderProjectsTable(projects) {
+      const tbody = document.getElementById('admin-projects-table');
+      if (!projects || !projects.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="text-center py-10" style="color: #64748B;">
+              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
+                <i data-lucide="folder-x" style="width: 32px; height: 32px; opacity: 0.4;"></i>
+                <span style="font-size: 14px; font-weight: 600;">No active cultivation projects created by registered users yet</span>
+                <span style="font-size: 12px; color: #94A3B8;">Real projects created by producers and farmers on the platform will appear here in real time.</span>
+              </div>
+            </td>
+          </tr>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      tbody.innerHTML = projects.map(p => `
+        <tr>
+          <td><span class="font-mono text-xs text-muted">#${p.id}</span></td>
+          <td>
+            <div class="font-bold text-primary">${p.name}</div>
+            <div class="text-xs text-muted" style="max-width: 280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.description || 'Soil-free commercial facility'}</div>
+          </td>
+          <td>
+            <div class="font-semibold">${p.owner_name || 'Producer'}</div>
+            <a href="javascript:void(0)" onclick="filterActiveProjectsByUser('${p.owner_email}')" class="text-xs font-semibold" style="color: #2563EB; text-decoration: none; display: inline-flex; align-items: center; gap: 3px;" title="Filter Active Projects by this user">
+              <i data-lucide="filter" style="width: 10px; height: 10px;"></i>
+              ${p.owner_email || '—'}
+            </a>
+          </td>
+          <td><span class="text-sm font-medium">${p.location || 'India'}</span></td>
+          <td><span class="font-semibold">${p.area_sqm ? p.area_sqm + ' m²' : '—'}</span></td>
+          <td><span class="glass-badge badge-primary">${p.batches_count || 0} batches</span></td>
+          <td><span class="glass-badge badge-success">${p.status || 'active'}</span></td>
+          <td class="text-xs text-muted">${p.created_at ? new Date(p.created_at).toLocaleDateString() : '—'}</td>
+        </tr>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    function filterProjectsTable() {
+      const q = (document.getElementById('search-projects-input').value || '').toLowerCase().trim();
+      const filtered = cachedProjects.filter(p =>
+        (p.name && p.name.toLowerCase().includes(q)) ||
+        (p.owner_email && p.owner_email.toLowerCase().includes(q)) ||
+        (p.owner_name && p.owner_name.toLowerCase().includes(q)) ||
+        (p.location && p.location.toLowerCase().includes(q))
+      );
+      renderProjectsTable(filtered);
+    }
+
+    // ── User Cultivation Projects Modal & Filter Logic ───────────────────
+    function viewUserProjectsModal(userEmail) {
+      modalSelectedUserEmail = userEmail;
+      const uEmail = (userEmail || '').toLowerCase();
+      const user = cachedUsers.find(u => (u.email || '').toLowerCase() === uEmail) || { email: userEmail, full_name: 'Registered User' };
+      const userProjs = (cachedProjects || []).filter(p =>
+        (p.owner_email && p.owner_email.toLowerCase() === uEmail) || p.user_id === user.id
+      );
+
+      document.getElementById('upm-user-title').textContent = `Cultivation Facilities: ${user.full_name || user.email}`;
+      document.getElementById('upm-user-subtitle').textContent = `Showing all active CEA facilities & agronomic setups owned by ${user.email}`;
+      document.getElementById('upm-footer-count').textContent = `${userProjs.length} ${userProjs.length === 1 ? 'Project Linked' : 'Projects Linked'}`;
+
+      const content = document.getElementById('upm-content');
+      if (!userProjs.length) {
+        content.innerHTML = `
+          <div class="text-center py-10" style="color: #64748B;">
+            <i data-lucide="folder-x" style="width: 36px; height: 36px; opacity: 0.4; margin: 0 auto 10px; display: block;"></i>
+            <div style="font-weight: 600; font-size: 14px;">No active cultivation projects created by this user yet.</div>
+            <div class="text-xs text-muted mt-1">When this user creates CEA projects in their portal, basic details will appear here.</div>
+          </div>
+        `;
+      } else {
+        content.innerHTML = `
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            ${userProjs.map(p => {
+              const rec = p.latest_recommendation;
+              return `
+                <div class="glass-card p-5" style="background: #FFFFFF; border: 1.5px solid #CBD5E1; border-radius: 14px; box-shadow: 0 4px 12px rgba(15,23,42,0.03);">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; flex-wrap: wrap;">
+                    <div>
+                      <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="font-mono text-xs text-muted font-bold">#${p.id}</span>
+                        <h4 class="font-bold text-primary" style="margin: 0; font-size: 16px;">${p.name}</h4>
+                        <span class="glass-badge badge-success" style="font-size: 10px;">${p.status || 'active'}</span>
+                      </div>
+                      ${p.description ? `<p class="text-xs text-muted" style="margin: 4px 0 0 0;">${p.description}</p>` : ''}
+                    </div>
+                    <span class="text-xs text-muted font-mono">Created: ${p.created_at ? new Date(p.created_at).toLocaleDateString() : '—'}</span>
+                  </div>
+
+                  <div class="grid grid-3" style="gap: 12px; background: #F8FAFC; padding: 12px; border-radius: 10px; border: 1px solid #E2E8F0;">
+                    <div>
+                      <div class="text-xs text-muted font-medium">Facility Location</div>
+                      <div class="font-semibold text-sm flex items-center gap-1 mt-0.5">
+                        <i data-lucide="map-pin" style="width: 13px; height: 13px; color: #DC2626;"></i>
+                        <span>${p.location || 'India'}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="text-xs text-muted font-medium">Cultivation Area</div>
+                      <div class="font-semibold text-sm flex items-center gap-1 mt-0.5">
+                        <i data-lucide="maximize" style="width: 13px; height: 13px; color: #2563EB;"></i>
+                        <span>${p.area_sqm ? p.area_sqm + ' m²' : 'Not specified'}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="text-xs text-muted font-medium">Active Batches</div>
+                      <div class="font-semibold text-sm flex items-center gap-1 mt-0.5">
+                        <i data-lucide="layers" style="width: 13px; height: 13px; color: #059669;"></i>
+                        <span>${p.batches_count || 0} batches</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  ${rec ? `
+                    <div style="margin-top: 10px; padding: 8px 12px; background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
+                      <div class="text-xs font-semibold text-green flex items-center gap-1.5">
+                        <i data-lucide="sparkles" style="width: 13px; height: 13px;"></i>
+                        <span>Top AI Match: <strong>${rec.top_product || rec.top_crop || 'Optimal Crop'}</strong></span>
+                      </div>
+                      ${rec.suitability_score ? `<span class="glass-badge badge-primary font-bold">${rec.suitability_score}% Match</span>` : ''}
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      }
+
+      const upModal = document.getElementById('user-projects-modal');
+      if (upModal) {
+        upModal.classList.add('show');
+        upModal.style.display = 'flex';
+      }
+      lucide.createIcons();
+    }
+
+    function closeUserProjectsModal() {
+      const upModal = document.getElementById('user-projects-modal');
+      if (upModal) {
+        upModal.classList.remove('show');
+        upModal.style.display = 'none';
+      }
+    }
+
+    function filterActiveProjectsFromModal() {
+      if (modalSelectedUserEmail) {
+        filterActiveProjectsByUser(modalSelectedUserEmail);
+      }
+      closeUserProjectsModal();
+    }
+
+    function filterActiveProjectsByUser(userEmail) {
+      if (!userEmail) return;
+      switchDashboardHub('projects');
+      const input = document.getElementById('search-projects-input');
+      if (input) {
+        input.value = userEmail;
+      }
+      const filterBar = document.getElementById('projects-active-filter-bar');
+      const filterEmailEl = document.getElementById('projects-active-filter-email');
+      if (filterBar && filterEmailEl) {
+        filterEmailEl.textContent = userEmail;
+        filterBar.style.display = 'flex';
+      }
+      filterProjectsTable();
+    }
+
+    function clearProjectsUserFilter() {
+      const input = document.getElementById('search-projects-input');
+      if (input) {
+        input.value = '';
+      }
+      const filterBar = document.getElementById('projects-active-filter-bar');
+      if (filterBar) {
+        filterBar.style.display = 'none';
+      }
+      filterProjectsTable();
+    }
+
+    // 3. Load Recommendations List
+    async function loadRecommendationsList() {
+      try {
+        let rRes;
+        if (AgriAPI.admin && typeof AgriAPI.admin.getRecommendations === 'function') {
+          rRes = await AgriAPI.admin.getRecommendations();
+        } else if (typeof AgriAPI.get === 'function') {
+          rRes = await AgriAPI.get('/admin/recommendations');
+        }
+
+        if (rRes && rRes.success && Array.isArray(rRes.data)) {
+          cachedRuns = rRes.data;
+        } else {
+          cachedRuns = [];
+        }
+      } catch (err) {
+        console.warn('Error loading recommendations:', err);
+        cachedRuns = [];
+      }
+      document.getElementById('adm-runs-count').textContent = cachedRuns.length;
+      document.getElementById('side-runs-badge').textContent = cachedRuns.length;
+      renderRunsTable(cachedRuns);
+    }
+
+    function renderRunsTable(runs) {
+      const tbody = document.getElementById('admin-recommendations-table');
+      if (!runs || !runs.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="text-center py-10" style="color: #64748B;">
+              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
+                <i data-lucide="sparkles" style="width: 32px; height: 32px; opacity: 0.4;"></i>
+                <span style="font-size: 14px; font-weight: 600;">No AI recommendation runs logged yet</span>
+                <span style="font-size: 12px; color: #94A3B8;">AI crop suitability runs executed by farmers will be recorded here.</span>
+              </div>
+            </td>
+          </tr>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      tbody.innerHTML = runs.map(r => `
+        <tr>
+          <td><span class="font-mono text-xs text-muted">#${r.id}</span></td>
+          <td class="font-bold text-primary">${r.project_name || 'Project #' + r.project_id}</td>
+          <td class="text-xs text-muted font-medium">${r.owner_email || '—'}</td>
+          <td><span class="glass-badge badge-primary font-mono text-xs">${r.objective_type}</span></td>
+          <td class="font-bold" style="color: #0F172A;">${r.top_crop || '—'}</td>
+          <td>
+            <span class="font-bold text-green" style="font-size: 13px;">
+              ${r.suitability_score ? r.suitability_score + '%' : '—'}
+            </span>
+          </td>
+          <td><span class="glass-badge badge-success">${r.status || 'complete'}</span></td>
+          <td class="text-xs text-muted">${r.created_at ? new Date(r.created_at).toLocaleString() : '—'}</td>
+        </tr>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    function filterRunsTable() {
+      const q = (document.getElementById('search-runs-input').value || '').toLowerCase().trim();
+      const filtered = cachedRuns.filter(r =>
+        (r.project_name && r.project_name.toLowerCase().includes(q)) ||
+        (r.top_crop && r.top_crop.toLowerCase().includes(q)) ||
+        (r.owner_email && r.owner_email.toLowerCase().includes(q))
+      );
+      renderRunsTable(filtered);
+    }
+
+    // 4. Load Lab Reports List
+    async function loadLabReportsList() {
+      try {
+        let repRes;
+        if (AgriAPI.admin && typeof AgriAPI.admin.getLabReports === 'function') {
+          repRes = await AgriAPI.admin.getLabReports();
+        } else if (typeof AgriAPI.get === 'function') {
+          repRes = await AgriAPI.get('/admin/lab-reports');
+        }
+
+        if (repRes && repRes.success && Array.isArray(repRes.data)) {
+          cachedReports = repRes.data;
+        } else {
+          cachedReports = [];
+        }
+      } catch (err) {
+        console.warn('Error loading lab reports:', err);
+        cachedReports = [];
+      }
+      document.getElementById('adm-reports-count').textContent = cachedReports.length;
+      document.getElementById('side-reports-badge').textContent = cachedReports.length;
+      renderReportsTable(cachedReports);
+    }
+
+    function renderReportsTable(reports) {
+      const tbody = document.getElementById('admin-reports-table');
+      if (!reports || !reports.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="text-center py-10" style="color: #64748B;">
+              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
+                <i data-lucide="file-check" style="width: 32px; height: 32px; opacity: 0.4;"></i>
+                <span style="font-size: 14px; font-weight: 600;">No lab reports processed yet</span>
+                <span style="font-size: 12px; color: #94A3B8;">Verified laboratory test reports and quality passports will appear here.</span>
+              </div>
+            </td>
+          </tr>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      tbody.innerHTML = reports.map(rep => `
+        <tr>
+          <td><span class="font-mono text-xs text-muted">#${rep.id}</span></td>
+          <td><span class="font-mono font-bold text-primary">${rep.batch_code || '—'}</span></td>
+          <td class="font-bold" style="color: #0F172A;">${rep.product_name || 'Cultivation Crop'}</td>
+          <td>
+            <div class="font-medium text-xs">${rep.project_name || '—'}</div>
+            <div class="text-xs text-muted">${rep.owner_email || '—'}</div>
+          </td>
+          <td class="text-sm font-semibold">${rep.lab_name || 'Certified Lab'}</td>
+          <td>
+            <span class="glass-badge ${rep.overall_status === 'pass' ? 'badge-success' : 'badge-warning'}">
+              ${rep.overall_status === 'pass' ? '✅ Pass & Verified' : '⏳ Review Pending'}
+            </span>
+          </td>
+          <td><span class="font-mono text-xs">${rep.report_number || '—'}</span></td>
+          <td class="text-xs text-muted">${rep.test_date || '—'}</td>
+        </tr>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    function filterReportsTable() {
+      const q = (document.getElementById('search-reports-input').value || '').toLowerCase().trim();
+      const filtered = cachedReports.filter(rep =>
+        (rep.batch_code && rep.batch_code.toLowerCase().includes(q)) ||
+        (rep.product_name && rep.product_name.toLowerCase().includes(q)) ||
+        (rep.lab_name && rep.lab_name.toLowerCase().includes(q))
+      );
+      renderReportsTable(filtered);
+    }
+
+    // Safe Invoker for Grant Admin API
+    async function executeGrantAdmin(payload) {
+      if (AgriAPI.admin && typeof AgriAPI.admin.grantAdmin === 'function') {
+        return await AgriAPI.admin.grantAdmin(payload);
+      }
+      if (typeof AgriAPI.post === 'function') {
+        return await AgriAPI.post('/admin/users/grant-admin', payload);
+      }
+      const token = localStorage.getItem('agrismart_token');
+      const res = await fetch(`${AgriConfig.API_BASE}/admin/users/grant-admin`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify(payload)
+      });
+      return await res.json();
+    }
+
+    // Toggle User Status
+    async function toggleStatus(userId, newStatus) {
+      if (!confirm(`Are you sure you want to change user status to ${newStatus}?`)) return;
+      try {
+        if (AgriAPI.admin && typeof AgriAPI.admin.updateUserStatus === 'function') {
+          await AgriAPI.admin.updateUserStatus(userId, newStatus);
+        } else if (typeof AgriAPI.patch === 'function') {
+          await AgriAPI.patch(`/admin/users/${userId}/status`, { status: newStatus });
+        }
+        loadUsersList();
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    }
+
+    // Promote User to Admin
+    async function promoteUserToAdmin(email) {
+      if (!confirm(`Are you sure you want to grant full Administrator access to ${email}?`)) return;
+      try {
+        const res = await executeGrantAdmin({ email });
+        alert((res && res.message) ? res.message : `Admin privileges granted to ${email}`);
+        loadUsersList();
+        loadAdminData();
+      } catch (err) {
+        alert(err.message || 'Failed to grant admin access');
+      }
+    }
+
+    // Revoke Admin Privileges (Main Admin Only)
+    async function revokeAdminRole(email) {
+      if (!confirm(`Are you sure you want to remove ${email} as Administrator? Their administrative privileges will be revoked and their account will be reverted to General User.`)) {
+        return;
+      }
+      try {
+        const res = (AgriAPI.admin && typeof AgriAPI.admin.revokeAdmin === 'function')
+          ? await AgriAPI.admin.revokeAdmin({ email })
+          : await AgriAPI.post('/admin/users/revoke-admin', { email });
+
+        alert((res && res.message) ? res.message : `Administrator privileges revoked from ${email}`);
+        await loadUsersList();
+        await loadAdminData();
+      } catch (err) {
+        alert(err.message || 'Failed to revoke administrator access');
+      }
+    }
+
+    // =========================================================================
+    // MODAL HANDLERS FOR SECONDARY SIDE & ACCOUNT FEATURES
+    // =========================================================================
+    async function openAdminFeatureModal(feature) {
+      const modal = document.getElementById('admin-feature-modal');
+      const title = document.getElementById('modal-feature-title');
+      const desc = document.getElementById('modal-feature-desc');
+      const content = document.getElementById('modal-feature-content');
+      
+      const accountDropdown = document.getElementById('account-dropdown-menu');
+      if (accountDropdown) {
+        accountDropdown.classList.remove('show');
+        accountDropdown.style.setProperty('display', 'none', 'important');
+      }
+
+      content.innerHTML = '<div class="text-center py-8 text-muted">Loading data…</div>';
+      modal.classList.add('show');
+      modal.style.display = 'flex';
+
+      if (feature === 'add-admin') {
+        title.textContent = 'Add Administrator Access';
+        desc.textContent = 'Elevate an existing user to Admin or register a new Administrator account';
+        content.innerHTML = `
+          <div id="modal-admin-alert" class="glass-alert mb-4" style="display: none;"></div>
+
+          <form id="modal-grant-admin-form" style="display: flex; flex-direction: column; gap: 16px;">
+            <div class="glass-input-group" style="margin-bottom: 0;">
+              <label class="glass-label" for="modal-admin-email" style="font-size: 13px; font-weight: 600;">
+                User Email Address <span class="required">*</span>
+              </label>
+              <div class="glass-input-icon-wrap">
+                <i data-lucide="mail" class="glass-input-icon"></i>
+                <input
+                  id="modal-admin-email"
+                  type="email"
+                  class="glass-input"
+                  placeholder="e.g. colleague@agrismart.ai"
+                  required
+                  style="padding-left: 2.6rem; background: #FFFFFF;"
+                >
+              </div>
+              <div class="text-xs text-muted mt-1">If this email is already registered (e.g. Producer or Buyer), their role will be upgraded to Administrator.</div>
+            </div>
+
+            <div class="glass-input-group" style="margin-bottom: 0;">
+              <label class="glass-label" for="modal-admin-name" style="font-size: 13px; font-weight: 600;">
+                Full Name (Optional for new user)
+              </label>
+              <div class="glass-input-icon-wrap">
+                <i data-lucide="user" class="glass-input-icon"></i>
+                <input
+                  id="modal-admin-name"
+                  type="text"
+                  class="glass-input"
+                  placeholder="e.g. Sarah Jenkins"
+                  style="padding-left: 2.6rem; background: #FFFFFF;"
+                >
+              </div>
+            </div>
+
+            <div class="glass-input-group" style="margin-bottom: 0;">
+              <label class="glass-label" for="modal-admin-pwd" style="font-size: 13px; font-weight: 600;">
+                Initial Password (Optional for new account)
+              </label>
+              <div class="glass-input-icon-wrap">
+                <i data-lucide="lock" class="glass-input-icon"></i>
+                <input
+                  id="modal-admin-pwd"
+                  type="text"
+                  class="glass-input"
+                  placeholder="Default: Admin@12345"
+                  style="padding-left: 2.6rem; background: #FFFFFF;"
+                >
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px;">
+              <button type="button" class="glass-btn" onclick="closeAdminFeatureModal()">Cancel</button>
+              <button type="submit" id="btn-modal-grant-admin" class="glass-btn glass-btn-primary" style="display: inline-flex; align-items: center; gap: 8px;">
+                <i data-lucide="shield-plus" style="width: 16px; height: 16px;"></i>
+                <span id="btn-modal-grant-text">Grant Admin Access</span>
+                <span id="modal-grant-spinner" class="spinner" style="display:none; width:16px; height:16px;"></span>
+              </button>
+            </div>
+          </form>
+        `;
+
+        document.getElementById('modal-grant-admin-form').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const email = document.getElementById('modal-admin-email').value.trim();
+          const fullName = document.getElementById('modal-admin-name').value.trim();
+          const initialPassword = document.getElementById('modal-admin-pwd').value.trim() || 'Admin@12345';
+
+          const btn = document.getElementById('btn-modal-grant-admin');
+          const btnText = document.getElementById('btn-modal-grant-text');
+          const spinner = document.getElementById('modal-grant-spinner');
+          const alertBox = document.getElementById('modal-admin-alert');
+
+          btn.disabled = true;
+          btnText.textContent = 'Granting…';
+          spinner.style.display = 'inline-block';
+
+          try {
+            const res = await executeGrantAdmin({
+              email,
+              full_name: fullName || undefined,
+              initial_password: initialPassword
+            });
+
+            alertBox.className = 'glass-alert glass-alert-success mb-4';
+            alertBox.innerHTML = `
+              <i data-lucide="check-circle" class="glass-alert-icon"></i>
+              <span>${res.message || `Administrator access granted to ${email}.`}</span>
+            `;
+            alertBox.style.display = 'flex';
+            document.getElementById('modal-admin-email').value = '';
+            document.getElementById('modal-admin-name').value = '';
+            document.getElementById('modal-admin-pwd').value = '';
+
+            loadUsersList();
+            loadAdminData();
+          } catch (err) {
+            alertBox.className = 'glass-alert glass-alert-danger mb-4';
+            alertBox.innerHTML = `
+              <i data-lucide="alert-circle" class="glass-alert-icon"></i>
+              <span>${err.message || 'Error granting admin access.'}</span>
+            `;
+            alertBox.style.display = 'flex';
+          } finally {
+            btn.disabled = false;
+            btnText.textContent = 'Grant Admin Access';
+            spinner.style.display = 'none';
+            lucide.createIcons();
+          }
+        });
+
+      } else if (feature === 'audit') {
+        title.textContent = 'Security & Audit Logs';
+        desc.textContent = 'Immutable trail of user logins, admin actions, and transactions';
+        try {
+          const aRes = await AgriAPI.admin.getAuditLogs(1);
+          if (aRes.success && aRes.data) {
+            content.innerHTML = `
+              <div class="glass-table-wrap">
+                <table class="glass-table">
+                  <thead>
+                    <tr>
+                      <th>Timestamp</th>
+                      <th>Action</th>
+                      <th>User ID</th>
+                      <th>Target</th>
+                      <th>IP Address</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${aRes.data.map(a => `
+                      <tr>
+                        <td class="text-xs text-muted">${new Date(a.created_at).toLocaleString()}</td>
+                        <td class="font-mono text-green font-semibold">${a.action}</td>
+                        <td>${a.user_id || 'System'}</td>
+                        <td>${a.target_type || '—'}</td>
+                        <td class="text-xs text-muted">${a.ip_address || '—'}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            `;
+          }
+        } catch (err) {
+          content.innerHTML = `<div class="glass-alert glass-alert-danger">${err.message}</div>`;
+        }
+      } else if (feature === 'settings') {
+        title.textContent = 'System Settings & Optimization Base Weights';
+        desc.textContent = 'Core engine parameters, objective priority baselines, and runtime flags';
+        try {
+          const sRes = await AgriAPI.admin.getSettings();
+          const settings = sRes.data || [
+            { key: 'weight.profit', value: '0.35', description: 'Default optimization weight for profit maximization' },
+            { key: 'weight.yield', value: '0.25', description: 'Default optimization weight for biomass yield' },
+            { key: 'weight.water_efficiency', value: '0.20', description: 'Weight given to water and nutrient conservation' },
+            { key: 'weight.nutrition_density', value: '0.20', description: 'Weight allocated to phytonutrient concentration' },
+            { key: 'platform.registration_open', value: 'true', description: 'Enable public registration for producers and buyers' }
+          ];
+          content.innerHTML = `
+            <div class="glass-table-wrap">
+              <table class="glass-table">
+                <thead>
+                  <tr>
+                    <th>Setting Key</th>
+                    <th>Current Value</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${settings.map(s => `
+                    <tr>
+                      <td class="font-mono font-bold text-primary">${s.key}</td>
+                      <td><span class="glass-badge badge-primary font-mono">${s.value}</span></td>
+                      <td class="text-sm text-muted">${s.description || 'System setting'}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `;
+        } catch (err) {
+          content.innerHTML = `<div class="glass-alert glass-alert-danger">${err.message}</div>`;
+        }
+      } else if (feature === 'sources') {
+        title.textContent = 'External Data Sources Registry';
+        desc.textContent = 'Registered public and licensed agricultural data feeds, weather APIs, and geocoding';
+        content.innerHTML = `
+          <div class="glass-table-wrap">
+            <table class="glass-table">
+              <thead>
+                <tr>
+                  <th>Source Name</th>
+                  <th>Type</th>
+                  <th>Attribution & License</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="font-bold text-primary">Open-Meteo Historical & Forecast Weather</td>
+                  <td><span class="glass-badge badge-primary">REST API</span></td>
+                  <td class="text-xs">Attribution required · CC-BY 4.0</td>
+                  <td><span class="glass-badge badge-success">Active Sync</span></td>
+                </tr>
+                <tr>
+                  <td class="font-bold text-primary">OpenStreetMap Nominatim Geocoding</td>
+                  <td><span class="glass-badge badge-primary">Geospatial</span></td>
+                  <td class="text-xs">Attribution required · ODbL 1.0</td>
+                  <td><span class="glass-badge badge-success">Active Sync</span></td>
+                </tr>
+                <tr>
+                  <td class="font-bold text-primary">ICAR & FAO Soil-Free Agronomic Standards</td>
+                  <td><span class="glass-badge badge-info">Knowledge Base</span></td>
+                  <td class="text-xs">Open Scientific Literature</td>
+                  <td><span class="glass-badge badge-success">Pre-Trained 1.0</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (feature === 'crops') {
+        const iconEl = document.getElementById('modal-feature-icon');
+        if (iconEl) iconEl.innerHTML = '<i data-lucide="sprout" style="width: 18px; height: 18px; color: #10B981;"></i>';
+        title.textContent = 'All Cultivation Crops & User Projects';
+        desc.textContent = 'Showing live list of projects done by registered users present on this website';
+
+        // Refresh projects and users if empty
+        if (!cachedProjects || !cachedProjects.length) {
+          try {
+            const pRes = (AgriAPI.admin && typeof AgriAPI.admin.getProjects === 'function')
+              ? await AgriAPI.admin.getProjects()
+              : await AgriAPI.get('/admin/projects');
+            if (pRes && pRes.success && Array.isArray(pRes.data)) {
+              cachedProjects = pRes.data;
+            }
+          } catch (e) {
+            console.warn('Could not refresh projects for crops modal:', e);
+          }
+        }
+
+        // Filter projects belonging to registered users on the website
+        const registeredEmails = new Set((cachedUsers || []).map(u => (u.email || '').toLowerCase()));
+        let userProjects = (cachedProjects || []).filter(p => {
+          if (!p) return false;
+          if (p.owner_email && registeredEmails.has(p.owner_email.toLowerCase())) return true;
+          if (p.user_id && cachedUsers.some(u => u.id === p.user_id)) return true;
+          return true; // Live projects from registered producers
+        });
+
+        window._modalCropsProjects = userProjects;
+
+        content.innerHTML = `
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <!-- Header Filter & Metrics Bar -->
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: #F8FAFC; padding: 12px 16px; border-radius: 12px; border: 1px solid #E2E8F0;">
+              <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <span class="glass-badge badge-primary" style="font-weight: 700; font-size: 11px;">
+                  🌱 ${userProjects.length} Registered User Projects
+                </span>
+                <span class="glass-badge badge-success" style="font-weight: 700; font-size: 11px;">
+                  👥 ${new Set(userProjects.map(p => p.owner_email).filter(Boolean)).size} Registered Producers
+                </span>
+              </div>
+              <div style="min-width: 260px;">
+                <input
+                  id="modal-crops-search-input"
+                  type="text"
+                  class="glass-input"
+                  placeholder="🔍 Search crops, projects, or users…"
+                  style="width: 100%; padding: 6px 12px; font-size: 12px; background: #FFFFFF;"
+                  oninput="filterModalCropsProjects()"
+                >
+              </div>
+            </div>
+
+            <!-- Projects Grid Container -->
+            <div id="modal-crops-cards-container" class="grid grid-2" style="gap: 14px;">
+              ${renderModalCropsCards(userProjects)}
+            </div>
+          </div>
+        `;
+      } else if (feature === 'labs') {
+        title.textContent = 'Accredited Laboratories Directory';
+        desc.textContent = 'Partner testing facilities for microbial, heavy metal, and pesticide screening';
+        content.innerHTML = `
+          <div class="glass-table-wrap">
+            <table class="glass-table">
+              <thead>
+                <tr>
+                  <th>Lab Name</th>
+                  <th>Location</th>
+                  <th>Accreditation</th>
+                  <th>Supported Test Disciplines</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="font-bold text-primary">National Food Safety & Testing Labs</td>
+                  <td>Bengaluru, Karnataka</td>
+                  <td><span class="glass-badge badge-success">NABL ISO/IEC 17025</span></td>
+                  <td class="text-xs">Heavy Metals, Microbial Screening, Pesticide Residues</td>
+                </tr>
+                <tr>
+                  <td class="font-bold text-primary">Apex BioAnalytics & Microchem Lab</td>
+                  <td>Pune, Maharashtra</td>
+                  <td><span class="glass-badge badge-success">NABL ISO/IEC 17025</span></td>
+                  <td class="text-xs">Phycocyanin Purity, Microcystin Toxins, Heavy Metals</td>
+                </tr>
+                <tr>
+                  <td class="font-bold text-primary">EcoCert Agronomic Analytical Services</td>
+                  <td>Dehradun, Uttarakhand</td>
+                  <td><span class="glass-badge badge-success">FSSAI Notified</span></td>
+                  <td class="text-xs">Bioactive Beta-Glucans, Ergosterol, Spore Contamination</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      lucide.createIcons();
+    }
+
+    function closeAdminFeatureModal() {
+      const modal = document.getElementById('admin-feature-modal');
+      if (modal) {
+        modal.classList.remove('show');
+        modal.style.display = 'none';
+      }
+    }
+
+    function getCropInfoForProject(p) {
+      let cropName = 'Soil-Free CEA Crop';
+      let methodName = 'Controlled CEA System';
+      let cropIcon = '🌱';
+      let suitabilityScore = '92.5%';
+      let objective = 'MAX PROFIT';
+
+      if (p.latest_recommendation) {
+        const rec = p.latest_recommendation;
+        if (rec.top_crop || rec.top_product) {
+          cropName = rec.top_crop || rec.top_product;
+        }
+        if (rec.suitability_score) {
+          suitabilityScore = typeof rec.suitability_score === 'number' ? rec.suitability_score.toFixed(1) + '%' : rec.suitability_score;
+        }
+        if (rec.objective_type) {
+          objective = rec.objective_type.replace(/_/g, ' ').toUpperCase();
+        }
+      }
+
+      const nameLower = (p.name || '').toLowerCase();
+      const descLower = (p.description || '').toLowerCase();
+
+      if (nameLower.includes('hydroponic') || descLower.includes('hydroponic') || cropName.toLowerCase().includes('lettuce')) {
+        if (cropName === 'Soil-Free CEA Crop') cropName = 'Butterhead Lettuce (Lactuca sativa)';
+        methodName = 'NFT Recirculating Hydroponics';
+        cropIcon = '🥬';
+      } else if (nameLower.includes('microalgae') || nameLower.includes('algae') || descLower.includes('spirulina') || cropName.toLowerCase().includes('spirulina')) {
+        if (cropName === 'Soil-Free CEA Crop') cropName = 'Spirulina (Arthrospira platensis)';
+        methodName = 'High-Rate Open Raceway Pond';
+        cropIcon = '🧪';
+      } else if (nameLower.includes('mushroom') || descLower.includes('mushroom') || cropName.toLowerCase().includes('shiitake') || cropName.toLowerCase().includes('oyster')) {
+        if (cropName === 'Soil-Free CEA Crop') cropName = 'Oyster & Shiitake Mushrooms';
+        methodName = 'Climate Controlled Humidity Chamber';
+        cropIcon = '🍄';
+      } else if (nameLower.includes('vertical') || descLower.includes('polyhouse') || cropName.toLowerCase().includes('pepper')) {
+        if (cropName === 'Soil-Free CEA Crop') cropName = 'Colored Bell Peppers (Capsicum annuum)';
+        methodName = 'Automated Drip Polyhouse';
+        cropIcon = '🫑';
+      }
+
+      return { cropName, methodName, cropIcon, suitabilityScore, objective };
+    }
+
+    function renderModalCropsCards(projects) {
+      if (!projects || !projects.length) {
+        return `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 36px 20px; color: #64748B;">
+            <i data-lucide="folder-x" style="width: 36px; height: 36px; opacity: 0.4; margin: 0 auto 10px; display: block;"></i>
+            <div style="font-weight: 700; font-size: 14px;">No registered user projects found.</div>
+            <div class="text-xs text-muted mt-1">Cultivation crops will appear here once registered users create projects on the website.</div>
+          </div>
+        `;
+      }
+
+      return projects.map(p => {
+        const { cropName, methodName, cropIcon, suitabilityScore, objective } = getCropInfoForProject(p);
+        return `
+          <div class="glass-card p-4" style="background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: 14px; box-shadow: 0 4px 12px rgba(15,23,42,0.04); display: flex; flex-direction: column; justify-content: space-between; gap: 12px;">
+            <div>
+              <!-- Top Row: Crop Name & Match Badge -->
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2" style="min-width: 0;">
+                  <div style="width: 32px; height: 32px; border-radius: 9px; background: rgba(16, 185, 129, 0.12); color: #059669; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">
+                    ${cropIcon}
+                  </div>
+                  <div style="min-width: 0;">
+                    <div class="font-bold text-sm" style="color: #0F172A; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${cropName}</div>
+                    <div class="text-xs text-muted font-medium" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${methodName}</div>
+                  </div>
+                </div>
+                <span class="glass-badge badge-success" style="font-size: 10px; font-weight: 700; flex-shrink: 0;">
+                  ⭐ ${suitabilityScore} Match
+                </span>
+              </div>
+
+              <!-- Project Title & Description -->
+              <div style="padding: 8px 10px; background: #F8FAFC; border-radius: 8px; border: 1px solid #F1F5F9; margin-bottom: 8px;">
+                <div class="font-bold text-xs text-primary mb-1">${p.name} <span class="font-mono text-muted" style="font-weight: normal;">#${p.id}</span></div>
+                <div class="text-xs text-muted" style="line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                  ${p.description || 'Soil-free commercial cultivation project registered on the website.'}
+                </div>
+              </div>
+
+              <!-- Specs Grid: Location, Area, Batches, Target -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px; margin-bottom: 8px;">
+                <div class="flex items-center gap-1 text-muted" title="${p.location || 'India'}">
+                  <i data-lucide="map-pin" style="width: 12px; height: 12px; color: #DC2626; flex-shrink: 0;"></i>
+                  <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${p.location || 'India'}</span>
+                </div>
+                <div class="flex items-center gap-1 text-muted">
+                  <i data-lucide="maximize" style="width: 12px; height: 12px; color: #2563EB; flex-shrink: 0;"></i>
+                  <span>${p.area_sqm ? p.area_sqm + ' m²' : 'Not specified'}</span>
+                </div>
+                <div class="flex items-center gap-1 text-muted">
+                  <i data-lucide="layers" style="width: 12px; height: 12px; color: #059669; flex-shrink: 0;"></i>
+                  <span>${p.batches_count || 0} Batches Active</span>
+                </div>
+                <div class="flex items-center gap-1 text-muted">
+                  <i data-lucide="target" style="width: 12px; height: 12px; color: #7C3AED; flex-shrink: 0;"></i>
+                  <span>${objective}</span>
+                </div>
+              </div>
+
+              <!-- Registered User Owner Info -->
+              <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 8px; border-top: 1px solid #F1F5F9; flex-wrap: wrap; gap: 4px;">
+                <div style="display: flex; align-items: center; gap: 6px; min-width: 0;">
+                  <i data-lucide="user" style="width: 13px; height: 13px; color: #2563EB; flex-shrink: 0;"></i>
+                  <div style="min-width: 0;">
+                    <span class="text-xs font-semibold" style="color: #1E293B;">${p.owner_name || 'Producer'}</span>
+                    <span class="text-xs text-muted" style="margin-left: 3px;">(${p.owner_email || '—'})</span>
+                  </div>
+                </div>
+                <span class="glass-badge badge-primary" style="font-size: 10px;">Registered User</span>
+              </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div style="display: flex; gap: 8px; margin-top: 4px;">
+              <button class="glass-btn glass-btn-sm glass-btn-primary" style="flex: 1; justify-content: center; font-size: 11px; padding: 6px 10px;" onclick="jumpToActiveProjectFromModal('${p.owner_email || ''}')" title="Filter this project in Active Projects Hub">
+                <i data-lucide="filter" style="width: 12px; height: 12px;"></i>
+                View in Active Projects
+              </button>
+              <button class="glass-btn glass-btn-sm" style="background: #F1F5F9; border-color: #CBD5E1; color: #334155; font-size: 11px; padding: 6px 10px;" onclick="closeAdminFeatureModal(); viewUserProjectsModal('${p.owner_email || ''}')" title="Inspect all cultivation facilities by this user">
+                <i data-lucide="sprout" style="width: 12px; height: 12px; color: #16A34A;"></i>
+                Inspect Facilities
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterModalCropsProjects() {
+      const q = (document.getElementById('modal-crops-search-input').value || '').toLowerCase().trim();
+      const all = window._modalCropsProjects || [];
+      const filtered = all.filter(p => {
+        const { cropName, methodName } = getCropInfoForProject(p);
+        return (
+          (p.name && p.name.toLowerCase().includes(q)) ||
+          (p.description && p.description.toLowerCase().includes(q)) ||
+          (p.owner_email && p.owner_email.toLowerCase().includes(q)) ||
+          (p.owner_name && p.owner_name.toLowerCase().includes(q)) ||
+          (p.location && p.location.toLowerCase().includes(q)) ||
+          cropName.toLowerCase().includes(q) ||
+          methodName.toLowerCase().includes(q)
+        );
+      });
+      const container = document.getElementById('modal-crops-cards-container');
+      if (container) {
+        container.innerHTML = renderModalCropsCards(filtered);
+        lucide.createIcons();
+      }
+    }
+
+    function jumpToActiveProjectFromModal(ownerEmail) {
+      closeAdminFeatureModal();
+      if (ownerEmail) {
+        filterActiveProjectsByUser(ownerEmail);
+      } else {
+        switchDashboardHub('projects');
+      }
+    }
+
+    document.getElementById('admin-feature-modal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('admin-feature-modal')) {
+        closeAdminFeatureModal();
+      }
+    });
+
+    document.getElementById('user-projects-modal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('user-projects-modal')) {
+        closeUserProjectsModal();
+      }
+    });
+
+    // Initialize
+    loadAdminData();
+  </script>
+</body>
+</html>
