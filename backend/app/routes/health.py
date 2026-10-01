@@ -1,7 +1,8 @@
 """
 AgriSmart AI — Health Check Route
 ===================================
-Returns API health status. Public endpoint — no authentication required.
+Returns API health status and database connectivity.
+Public endpoint — no authentication required.
 """
 
 from flask import Blueprint, jsonify, current_app
@@ -14,13 +15,50 @@ def health_check():
     """
     GET /api/health
     ---------------
-    Returns service health and version.
-    Used by deployment pipeline and load balancer probes.
+    Returns service health, database status, and version.
+    Used by deployment pipeline, uptime monitors, and load balancer probes.
     """
+    db_status = "connected"
+    products_count = 0
+    try:
+        from ..models.cultivation import Product
+        products_count = Product.query.count()
+    except Exception as e:
+        db_status = f"error: {e}"
+
     return jsonify(
         {
             "status": "ok",
-            "service": current_app.config["APP_NAME"],
-            "version": current_app.config["APP_VERSION"],
+            "service": current_app.config.get("APP_NAME", "AgriSmart AI"),
+            "version": current_app.config.get("APP_VERSION", "1.0.0"),
+            "database": db_status,
+            "products_count": products_count,
         }
     ), 200
+
+
+@health_bp.route("/init", methods=["GET", "POST"])
+def init_database():
+    """
+    GET/POST /api/init
+    ------------------
+    Explicit endpoint to initialize all tables and seed master data on demand.
+    """
+    try:
+        from ..extensions import db
+        from .. import models
+        db.create_all()
+        from ..services.seeder import seed_all_master_data
+        seed_all_master_data(db.session)
+        from ..models.cultivation import Product
+        count = Product.query.count()
+        return jsonify({
+            "success": True,
+            "message": "Database initialized and master data seeded successfully",
+            "products_count": count
+        }), 200
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500

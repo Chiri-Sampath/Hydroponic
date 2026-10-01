@@ -72,13 +72,16 @@ def create_app(config_name: str = None) -> Flask:
         try:
             if app.config.get("SQLALCHEMY_DATABASE_URI", "").startswith("sqlite"):
                 os.makedirs(app.instance_path, exist_ok=True)
+            # Ensure all models are registered in SQLAlchemy metadata before create_all
+            from . import models
             db.create_all()
+            
             from .models.cultivation import Product
             if Product.query.count() == 0:
                 from .services.seeder import seed_all_master_data
                 seed_all_master_data(db.session)
         except Exception as e:
-            app.logger.warning(f"Database auto-init notification: {e}")
+            app.logger.error(f"Database auto-init notification: {e}")
 
     return app
 
