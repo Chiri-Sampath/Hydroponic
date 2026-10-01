@@ -27,17 +27,64 @@ LAST_EMAIL_STATUS = {
 }
 
 
+def _connect_smtp_server(mail_server: str, mail_port: int, use_ssl: bool = False, use_tls: bool = True, timeout: int = 15):
+    """
+    Connects to SMTP server forcing IPv4 resolution to prevent [Errno 101] Network is unreachable
+    on cloud container environments (Render, Heroku) that lack IPv6 routes.
+    Tries SSL (port 465) and STARTTLS (port 587) automatically.
+    """
+    import socket
+
+    # Strategy 1: If connecting to Gmail or port 465, try direct SMTP_SSL first
+    attempts = []
+    if "gmail.com" in mail_server or mail_port == 465 or use_ssl:
+        attempts.append(("smtp.gmail.com", 465, True, False))
+        attempts.append(("smtp.gmail.com", 587, False, True))
+    else:
+        attempts.append((mail_server, mail_port, use_ssl, use_tls))
+        attempts.append((mail_server, 465, True, False))
+        attempts.append((mail_server, 587, False, True))
+
+    last_error = None
+    for host, port, is_ssl, is_tls in attempts:
+        try:
+            # Resolve IPv4 to bypass unreachable IPv6 routes
+            try:
+                addr_info = socket.getaddrinfo(host, port, socket.AF_INET, socket.SOCK_STREAM)
+                resolved_ip = addr_info[0][4][0] if addr_info else host
+            except Exception:
+                resolved_ip = host
+
+            if is_ssl:
+                server = smtplib.SMTP_SSL(resolved_ip, port, timeout=timeout)
+                server.ehlo(host)
+                return server
+            else:
+                server = smtplib.SMTP(resolved_ip, port, timeout=timeout)
+                server.ehlo(host)
+                if is_tls:
+                    server.starttls()
+                    server.ehlo(host)
+                return server
+        except Exception as conn_err:
+            last_error = conn_err
+            continue
+
+    raise last_error or Exception(f"Could not connect to {mail_server}:{mail_port}")
+
+
 def test_smtp_connection(app_config: dict = None) -> dict:
     """
     Tests SMTP connectivity and authentication with Gmail without sending an email.
     """
     import datetime
     mail_server = app_config.get("MAIL_SERVER", "smtp.gmail.com") if app_config else os.environ.get("MAIL_SERVER", "smtp.gmail.com")
-    mail_port = int(app_config.get("MAIL_PORT", 587) if app_config else os.environ.get("MAIL_PORT", 587))
+    mail_port = int(app_config.get("MAIL_PORT", 465) if app_config else os.environ.get("MAIL_PORT", 465))
     mail_user = (app_config.get("MAIL_USERNAME", "hydroponiccrop@gmail.com") if app_config else os.environ.get("MAIL_USERNAME", "hydroponiccrop@gmail.com")).strip()
     raw_pass = app_config.get("MAIL_PASSWORD", "") if app_config else os.environ.get("MAIL_PASSWORD", os.environ.get("GMAIL_APP_PASSWORD", ""))
     mail_pass = str(raw_pass or "").replace(" ", "").strip()
     use_tls = app_config.get("MAIL_USE_TLS", True) if app_config else True
+    use_ssl = app_config.get("MAIL_USE_SSL", True) if app_config else True
 
     if not mail_pass:
         return {
@@ -48,9 +95,7 @@ def test_smtp_connection(app_config: dict = None) -> dict:
         }
 
     try:
-        server = smtplib.SMTP(mail_server, mail_port, timeout=10)
-        if use_tls:
-            server.starttls()
+        server = _connect_smtp_server(mail_server, mail_port, use_ssl=use_ssl, use_tls=use_tls, timeout=12)
         server.login(mail_user, mail_pass)
         server.quit()
         return {
@@ -61,13 +106,17 @@ def test_smtp_connection(app_config: dict = None) -> dict:
             "message": f"Successfully authenticated with {mail_server} as {mail_user}!"
         }
     except Exception as e:
+        err_msg = str(e)
+        hint = "Ensure you are using a 16-character Google App Password (not your personal Gmail password) and 2-Step Verification is active on hydroponiccrop@gmail.com."
+        if "Username and Password not accepted" in err_msg or "BadCredentials" in err_msg or "535" in err_msg:
+            hint = "Authentication failed: Please verify that the 16-character Google App Password was copied completely (Google App Passwords have 4 groups of 4 letters, total 16 characters)."
         return {
             "configured": True,
             "authenticated": False,
             "smtp_server": mail_server,
             "smtp_user": mail_user,
-            "error": str(e),
-            "hint": "Ensure you are using a 16-character Google App Password (not your personal Gmail password) and 2-Step Verification is active on hydroponiccrop@gmail.com."
+            "error": err_msg,
+            "hint": hint
         }
 
 
@@ -78,13 +127,13 @@ def send_email_async(to_email: str, subject: str, html_body: str, text_body: str
     import datetime
     global LAST_EMAIL_STATUS
     mail_server = app_config.get("MAIL_SERVER", "smtp.gmail.com") if app_config else os.environ.get("MAIL_SERVER", "smtp.gmail.com")
-    mail_port = int(app_config.get("MAIL_PORT", 587) if app_config else os.environ.get("MAIL_PORT", 587))
+    mail_port = int(app_config.get("MAIL_PORT", 465) if app_config else os.environ.get("MAIL_PORT", 465))
     mail_user = (app_config.get("MAIL_USERNAME", "hydroponiccrop@gmail.com") if app_config else os.environ.get("MAIL_USERNAME", "hydroponiccrop@gmail.com")).strip()
     raw_pass = app_config.get("MAIL_PASSWORD", "") if app_config else os.environ.get("MAIL_PASSWORD", os.environ.get("GMAIL_APP_PASSWORD", ""))
     mail_pass = str(raw_pass or "").replace(" ", "").strip()
     mail_sender = app_config.get("MAIL_DEFAULT_SENDER", f"AgriSmart AI <{mail_user}>") if app_config else f"AgriSmart AI <{mail_user}>"
     use_tls = app_config.get("MAIL_USE_TLS", True) if app_config else True
-    use_ssl = app_config.get("MAIL_USE_SSL", False) if app_config else False
+    use_ssl = app_config.get("MAIL_USE_SSL", True) if app_config else True
 
     LAST_EMAIL_STATUS["attempted_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
     LAST_EMAIL_STATUS["recipient"] = to_email
@@ -107,20 +156,20 @@ def send_email_async(to_email: str, subject: str, html_body: str, text_body: str
         if html_body:
             msg.attach(MIMEText(html_body, "html", "utf-8"))
 
-        if use_ssl:
-            server = smtplib.SMTP_SSL(mail_server, mail_port, timeout=15)
-        else:
-            server = smtplib.SMTP(mail_server, mail_port, timeout=15)
-            if use_tls:
-                server.starttls()
-
+        server = _connect_smtp_server(mail_server, mail_port, use_ssl=use_ssl, use_tls=use_tls, timeout=15)
         server.login(mail_user, mail_pass)
         server.sendmail(mail_user, [to_email], msg.as_string())
         server.quit()
+
         logger.info(f"[EmailService] Email successfully sent to {to_email} (Subject: {subject})")
+        LAST_EMAIL_STATUS["success"] = True
+        LAST_EMAIL_STATUS["message"] = f"Email successfully delivered to {to_email} via {mail_server}!"
         return True
     except Exception as e:
-        logger.error(f"[EmailService] Failed to send email to {to_email}: {e}")
+        err_msg = str(e)
+        logger.error(f"[EmailService] Failed to send email to {to_email}: {err_msg}")
+        LAST_EMAIL_STATUS["success"] = False
+        LAST_EMAIL_STATUS["message"] = f"Error sending email: {err_msg}"
         return False
 
 
