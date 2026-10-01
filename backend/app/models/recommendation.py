@@ -61,7 +61,7 @@ class RecommendationRun(db.Model):
     input_snapshot = db.Column(db.JSON, nullable=True)     # full input at run time
     weight_profile = db.Column(db.JSON, nullable=True)     # objective-adjusted weights used
     model_version_id = db.Column(db.Integer, db.ForeignKey("model_versions.id"), nullable=True)
-    status = db.Column(db.Enum("pending", "complete", "failed", name="rec_run_status_enum"), default="pending")
+    status = db.Column(db.Enum("pending", "complete", "failed", native_enum=False), default="pending")
     error_message = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     completed_at = db.Column(db.DateTime, nullable=True)
@@ -118,7 +118,7 @@ class FeatureImportance(db.Model):
     result_id = db.Column(db.Integer, db.ForeignKey("recommendation_results.id"), nullable=False, index=True)
     feature_name = db.Column(db.String(200), nullable=False)
     importance_value = db.Column(db.Numeric(10, 6), nullable=True)  # SHAP value or weight contribution
-    direction = db.Column(db.Enum("positive", "negative", "neutral", name="feature_direction_enum"), nullable=True)
+    direction = db.Column(db.Enum("positive", "negative", "neutral", native_enum=False), nullable=True)
     human_explanation = db.Column(db.Text, nullable=True)    # plain-English reason
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
@@ -152,7 +152,7 @@ class Scenario(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     project_id = db.Column(db.Integer, db.ForeignKey("projects.id"), nullable=False, index=True)
-    scenario_type = db.Column(db.Enum("base", "what_if", "portfolio", name="scenario_type_enum"), nullable=False, default="base")
+    scenario_type = db.Column(db.Enum("base", "what_if", "portfolio", native_enum=False), nullable=False, default="base")
     name = db.Column(db.String(200), nullable=True)
     product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=True)
     area_sqm = db.Column(db.Numeric(10, 2), nullable=True)

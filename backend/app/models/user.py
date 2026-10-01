@@ -62,7 +62,7 @@ class User(db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     role_id = db.Column(db.Integer, db.ForeignKey("roles.id"), nullable=False, index=True)
     status = db.Column(
-        db.Enum("active", "suspended", "deactivated", "pending_verification", name="user_status_enum"),
+        db.Enum("active", "suspended", "deactivated", "pending_verification", native_enum=False),
         nullable=False,
         default="active",
     )
