@@ -23,7 +23,7 @@ class Project(db.Model):
     name = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=True)
     status = db.Column(
-        db.Enum("active", "archived", "deleted", native_enum=False),
+        db.String(50),
         nullable=False,
         default="active",
         index=True,
@@ -101,7 +101,7 @@ class ResourceProfile(db.Model):
     # Area
     available_area_sqm = db.Column(db.Numeric(10, 2), nullable=True)
     area_type = db.Column(
-        db.Enum("indoor", "outdoor", "greenhouse", "rooftop", "hybrid", native_enum=False),
+        db.String(50),
         nullable=True,
     )
 
