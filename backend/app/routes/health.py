@@ -84,3 +84,56 @@ def email_status():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+
+@health_bp.route("/email-test", methods=["GET"])
+def email_test():
+    """
+    GET /api/email-test?to=someone@example.com
+    Fires a real Brevo API call synchronously and returns the raw result.
+    """
+    import os
+    import requests as req
+    from flask import request as flask_request
+
+    to_email = flask_request.args.get("to", "").strip()
+    if not to_email:
+        return jsonify({"error": "Provide ?to=your@email.com"}), 400
+
+    api_key = current_app.config.get("BREVO_API_KEY") or os.environ.get("BREVO_API_KEY", "")
+    from_email = (
+        current_app.config.get("MAIL_FROM_EMAIL")
+        or os.environ.get("MAIL_FROM_EMAIL", "hydroponiccrop@gmail.com")
+    )
+
+    if not api_key:
+        return jsonify({"error": "BREVO_API_KEY not set in environment"}), 500
+
+    payload = {
+        "sender": {"name": "AgriSmart AI", "email": from_email},
+        "to": [{"email": to_email}],
+        "subject": "AgriSmart AI - Email Delivery Test",
+        "htmlContent": "<h2>AgriSmart AI</h2><p>Email delivery is working correctly!</p>",
+        "textContent": "AgriSmart AI email delivery test - it works!",
+    }
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "api-key": api_key,
+    }
+    try:
+        resp = req.post(
+            "https://api.brevo.com/v3/smtp/email",
+            json=payload,
+            headers=headers,
+            timeout=20,
+        )
+        return jsonify({
+            "success": resp.status_code in (200, 201),
+            "http_status": resp.status_code,
+            "from_email": from_email,
+            "to": to_email,
+            "brevo_response": resp.json() if resp.content else {},
+        }), 200
+    except Exception as exc:
+        return jsonify({"success": False, "error": str(exc)}), 500
