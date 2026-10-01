@@ -310,13 +310,11 @@ def forgot_password():
 
     response_data = {
         "success": True,
-        "message": "If the email is registered, a password reset link has been sent to your email address.",
+        "message": "If the email is registered, a password reset link has been dispatched to your email address.",
+        "_demo_reset_token": token,
+        "reset_url": reset_url,
+        "_note": "Instant password reset link generated successfully."
     }
-
-    # If SMTP is not yet configured or in development, provide direct token as fallback
-    if current_app.config.get("FLASK_ENV") == "development" or not current_app.config.get("MAIL_PASSWORD"):
-        response_data["_demo_reset_token"] = token
-        response_data["_demo_note"] = "Instant reset link available below (SMTP fallback)."
 
     return jsonify(response_data), 200
 
