@@ -19,11 +19,63 @@ from flask import current_app
 
 logger = logging.getLogger(__name__)
 
+LAST_EMAIL_STATUS = {
+    "attempted_at": None,
+    "recipient": None,
+    "success": False,
+    "message": "No email sent yet since service startup."
+}
+
+
+def test_smtp_connection(app_config: dict = None) -> dict:
+    """
+    Tests SMTP connectivity and authentication with Gmail without sending an email.
+    """
+    import datetime
+    mail_server = app_config.get("MAIL_SERVER", "smtp.gmail.com") if app_config else os.environ.get("MAIL_SERVER", "smtp.gmail.com")
+    mail_port = int(app_config.get("MAIL_PORT", 587) if app_config else os.environ.get("MAIL_PORT", 587))
+    mail_user = app_config.get("MAIL_USERNAME", "hydroponiccrop@gmail.com") if app_config else os.environ.get("MAIL_USERNAME", "hydroponiccrop@gmail.com")
+    mail_pass = app_config.get("MAIL_PASSWORD", "") if app_config else os.environ.get("MAIL_PASSWORD", os.environ.get("GMAIL_APP_PASSWORD", ""))
+    use_tls = app_config.get("MAIL_USE_TLS", True) if app_config else True
+
+    if not mail_pass:
+        return {
+            "configured": False,
+            "smtp_server": mail_server,
+            "smtp_user": mail_user,
+            "error": "MAIL_PASSWORD is not set in Render Environment Variables. Generate a 16-character Google App Password at myaccount.google.com/apppasswords and add MAIL_PASSWORD to Render."
+        }
+
+    try:
+        server = smtplib.SMTP(mail_server, mail_port, timeout=10)
+        if use_tls:
+            server.starttls()
+        server.login(mail_user, mail_pass)
+        server.quit()
+        return {
+            "configured": True,
+            "authenticated": True,
+            "smtp_server": mail_server,
+            "smtp_user": mail_user,
+            "message": f"Successfully authenticated with {mail_server} as {mail_user}!"
+        }
+    except Exception as e:
+        return {
+            "configured": True,
+            "authenticated": False,
+            "smtp_server": mail_server,
+            "smtp_user": mail_user,
+            "error": str(e),
+            "hint": "Ensure you are using a 16-character Google App Password (not your personal Gmail password) and 2-Step Verification is active on hydroponiccrop@gmail.com."
+        }
+
 
 def send_email_async(to_email: str, subject: str, html_body: str, text_body: str = None, app_config: dict = None):
     """
     Sends an email via SMTP in a background thread or directly.
     """
+    import datetime
+    global LAST_EMAIL_STATUS
     mail_server = app_config.get("MAIL_SERVER", "smtp.gmail.com") if app_config else os.environ.get("MAIL_SERVER", "smtp.gmail.com")
     mail_port = int(app_config.get("MAIL_PORT", 587) if app_config else os.environ.get("MAIL_PORT", 587))
     mail_user = app_config.get("MAIL_USERNAME", "hydroponiccrop@gmail.com") if app_config else os.environ.get("MAIL_USERNAME", "hydroponiccrop@gmail.com")
@@ -32,11 +84,14 @@ def send_email_async(to_email: str, subject: str, html_body: str, text_body: str
     use_tls = app_config.get("MAIL_USE_TLS", True) if app_config else True
     use_ssl = app_config.get("MAIL_USE_SSL", False) if app_config else False
 
+    LAST_EMAIL_STATUS["attempted_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    LAST_EMAIL_STATUS["recipient"] = to_email
+
     if not mail_pass:
-        logger.warning(
-            f"[EmailService] MAIL_PASSWORD not configured. Email to {to_email} with subject '{subject}' not sent to SMTP server. "
-            f"(Configure MAIL_PASSWORD or GMAIL_APP_PASSWORD on Render)."
-        )
+        msg = f"MAIL_PASSWORD is not set on Render. Email to {to_email} was skipped. Add MAIL_PASSWORD in Render Environment."
+        logger.warning(f"[EmailService] {msg}")
+        LAST_EMAIL_STATUS["success"] = False
+        LAST_EMAIL_STATUS["message"] = msg
         return False
 
     try:
