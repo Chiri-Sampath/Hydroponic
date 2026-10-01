@@ -43,6 +43,16 @@ def create_app(config_name: str = None) -> Flask:
     # Ensure upload folder exists
     os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
+    # Root endpoint for hosting health checks (Render / Uptime monitors)
+    @app.route("/", methods=["GET", "HEAD"])
+    def root_health():
+        return jsonify({
+            "status": "online",
+            "service": "AgriSmart AI API Engine",
+            "version": app.config.get("APP_VERSION", "1.0.0"),
+            "health": "/api/health"
+        }), 200
+
     # Register blueprints
     _register_blueprints(app)
 

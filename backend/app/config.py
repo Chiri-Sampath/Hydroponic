@@ -38,8 +38,13 @@ class BaseConfig:
     JWT_HEADER_TYPE = "Bearer"
 
     # Database
-    db_url_env = os.environ.get("DATABASE_URL", "sqlite:///instance/agri_smart_ai.db")
-    if db_url_env.startswith("postgres://"):
+    db_url_env = os.environ.get("DATABASE_URL")
+    if not db_url_env or "instance/agri_smart_ai.db" in db_url_env:
+        instance_dir = Path(__file__).resolve().parents[1] / "instance"
+        instance_dir.mkdir(parents=True, exist_ok=True)
+        db_path = instance_dir / "agri_smart_ai.db"
+        db_url_env = f"sqlite:///{db_path.as_posix()}"
+    elif db_url_env.startswith("postgres://"):
         db_url_env = db_url_env.replace("postgres://", "postgresql://", 1)
     SQLALCHEMY_DATABASE_URI: str = db_url_env
     SQLALCHEMY_TRACK_MODIFICATIONS = False
