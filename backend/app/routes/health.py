@@ -92,43 +92,52 @@ def email_test():
     Sends a real password reset email directly to the given address.
     """
     import os
+    import traceback
     from datetime import datetime, timezone, timedelta
     from ..extensions import db
     from ..models.user import User
     from ..routes.auth import generate_reset_token
     from ..services.email_service import send_password_reset_email, LAST_EMAIL_STATUS
 
-    if request.method == "POST":
-        data = request.get_json(force=True, silent=True) or {}
-        email = (data.get("email") or data.get("to") or "").strip().lower()
-    else:
-        email = (request.args.get("to") or request.args.get("email") or "").strip().lower()
+    try:
+        if request.method == "POST":
+            data = request.get_json(force=True, silent=True) or {}
+            email = (data.get("email") or data.get("to") or "").strip().lower()
+        else:
+            email = (request.args.get("to") or request.args.get("email") or "").strip().lower()
 
-    if not email:
-        return jsonify({"error": "Provide ?to=your@email.com in query parameters or { \"email\": \"...\" } in JSON"}), 400
+        if not email:
+            return jsonify({"error": "Provide ?to=your@email.com in query parameters or { \"email\": \"...\" } in JSON"}), 400
 
-    user = db.session.query(User).filter_by(email=email).first()
-    token = generate_reset_token()
-    if user:
-        user.password_reset_token = token
-        user.password_reset_expires = datetime.now(timezone.utc) + timedelta(hours=1)
-        db.session.commit()
-        display_name = user.full_name or email
-    else:
+        user = db.session.query(User).filter_by(email=email).first()
+        token = generate_reset_token()
         display_name = email
+        if user:
+            user.password_reset_token = token
+            user.password_reset_expires = datetime.now(timezone.utc) + timedelta(hours=1)
+            db.session.commit()
+            if user.full_name:
+                display_name = user.full_name
 
-    frontend_base = current_app.config.get(
-        "FRONTEND_URL", "https://hydroponic-frontend-seven.vercel.app"
-    ).rstrip("/")
-    reset_url = f"{frontend_base}/pages/user/reset-password.html?token={token}"
+        frontend_base = current_app.config.get(
+            "FRONTEND_URL", "https://hydroponic-frontend-seven.vercel.app"
+        ).rstrip("/")
+        reset_url = f"{frontend_base}/pages/user/reset-password.html?token={token}"
 
-    ok = send_password_reset_email(email, display_name, reset_url)
+        ok = send_password_reset_email(email, display_name, reset_url)
 
-    return jsonify({
-        "success": ok,
-        "sent_to": email,
-        "sent_from": os.environ.get("MAIL_FROM_EMAIL", "hydroponiccrop@gmail.com"),
-        "reset_link": reset_url,
-        "token_expires_in": "1 hour",
-        "last_status": LAST_EMAIL_STATUS,
-    }), 200 if ok else 500
+        return jsonify({
+            "success": ok,
+            "sent_to": email,
+            "sent_from": os.environ.get("MAIL_FROM_EMAIL", "hydroponiccrop@gmail.com"),
+            "reset_link": reset_url,
+            "token_expires_in": "1 hour",
+            "last_status": LAST_EMAIL_STATUS,
+        }), 200
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "traceback": traceback.format_exc(),
+        }), 200
+
