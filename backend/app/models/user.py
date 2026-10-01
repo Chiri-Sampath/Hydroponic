@@ -83,6 +83,13 @@ class User(db.Model):
     buyer_profile = db.relationship("BuyerProfile", back_populates="user", uselist=False, cascade="all, delete-orphan")
     audit_logs = db.relationship("AuditLog", back_populates="user", lazy="dynamic")
 
+    @property
+    def full_name(self) -> str:
+        """Convenience accessor for user's full name from profile."""
+        if self.profile and self.profile.full_name:
+            return self.profile.full_name
+        return self.email
+
     def has_permission(self, permission_code: str) -> bool:
         """Check if this user's role has the given permission code."""
         return any(p.code == permission_code for p in self.role.permissions)
@@ -91,7 +98,7 @@ class User(db.Model):
         return self.status == "active"
 
     def __repr__(self):
-        return f"<User {self.email} [{self.role.name}]>"
+        return f"<User {self.email} [{self.role.name if self.role else 'no-role'}]>"
 
 
 class UserProfile(db.Model):
