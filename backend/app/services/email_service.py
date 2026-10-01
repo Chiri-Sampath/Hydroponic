@@ -56,7 +56,7 @@ def _send_via_brevo(to_email: str, to_name: str, subject: str, html_body: str, t
         return {"ok": False, "error": "BREVO_API_KEY not configured"}
 
     # Use the configured sender — MUST be verified in Brevo Senders list
-    from_email = _get_cfg("MAIL_FROM_EMAIL", "noreply@agrismart.ai")
+    from_email = _get_cfg("MAIL_FROM_EMAIL", "hydroponiccrop@gmail.com")
     from_name = _get_cfg("MAIL_FROM_NAME", "AgriSmart AI")
 
     payload = {
@@ -135,7 +135,7 @@ def test_smtp_connection(app_config: dict = None) -> dict:
     Returns provider configuration status.
     """
     api_key = _get_cfg("BREVO_API_KEY")
-    from_email = _get_cfg("MAIL_FROM_EMAIL", "noreply@agrismart.ai")
+    from_email = _get_cfg("MAIL_FROM_EMAIL", "hydroponiccrop@gmail.com")
 
     if not api_key:
         return {
