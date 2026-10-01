@@ -34,8 +34,9 @@ def test_smtp_connection(app_config: dict = None) -> dict:
     import datetime
     mail_server = app_config.get("MAIL_SERVER", "smtp.gmail.com") if app_config else os.environ.get("MAIL_SERVER", "smtp.gmail.com")
     mail_port = int(app_config.get("MAIL_PORT", 587) if app_config else os.environ.get("MAIL_PORT", 587))
-    mail_user = app_config.get("MAIL_USERNAME", "hydroponiccrop@gmail.com") if app_config else os.environ.get("MAIL_USERNAME", "hydroponiccrop@gmail.com")
-    mail_pass = app_config.get("MAIL_PASSWORD", "") if app_config else os.environ.get("MAIL_PASSWORD", os.environ.get("GMAIL_APP_PASSWORD", ""))
+    mail_user = (app_config.get("MAIL_USERNAME", "hydroponiccrop@gmail.com") if app_config else os.environ.get("MAIL_USERNAME", "hydroponiccrop@gmail.com")).strip()
+    raw_pass = app_config.get("MAIL_PASSWORD", "") if app_config else os.environ.get("MAIL_PASSWORD", os.environ.get("GMAIL_APP_PASSWORD", ""))
+    mail_pass = str(raw_pass or "").replace(" ", "").strip()
     use_tls = app_config.get("MAIL_USE_TLS", True) if app_config else True
 
     if not mail_pass:
@@ -78,8 +79,9 @@ def send_email_async(to_email: str, subject: str, html_body: str, text_body: str
     global LAST_EMAIL_STATUS
     mail_server = app_config.get("MAIL_SERVER", "smtp.gmail.com") if app_config else os.environ.get("MAIL_SERVER", "smtp.gmail.com")
     mail_port = int(app_config.get("MAIL_PORT", 587) if app_config else os.environ.get("MAIL_PORT", 587))
-    mail_user = app_config.get("MAIL_USERNAME", "hydroponiccrop@gmail.com") if app_config else os.environ.get("MAIL_USERNAME", "hydroponiccrop@gmail.com")
-    mail_pass = app_config.get("MAIL_PASSWORD", "") if app_config else os.environ.get("MAIL_PASSWORD", os.environ.get("GMAIL_APP_PASSWORD", ""))
+    mail_user = (app_config.get("MAIL_USERNAME", "hydroponiccrop@gmail.com") if app_config else os.environ.get("MAIL_USERNAME", "hydroponiccrop@gmail.com")).strip()
+    raw_pass = app_config.get("MAIL_PASSWORD", "") if app_config else os.environ.get("MAIL_PASSWORD", os.environ.get("GMAIL_APP_PASSWORD", ""))
+    mail_pass = str(raw_pass or "").replace(" ", "").strip()
     mail_sender = app_config.get("MAIL_DEFAULT_SENDER", f"AgriSmart AI <{mail_user}>") if app_config else f"AgriSmart AI <{mail_user}>"
     use_tls = app_config.get("MAIL_USE_TLS", True) if app_config else True
     use_ssl = app_config.get("MAIL_USE_SSL", False) if app_config else False
