@@ -1,7 +1,28 @@
 {
   "version": 2,
   "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
+    {
+      "source": "/pages/:path*",
+      "destination": "/frontend/pages/:path*.html"
+    },
+    {
+      "source": "/js/:path*",
+      "destination": "/frontend/js/:path*"
+    },
+    {
+      "source": "/css/:path*",
+      "destination": "/frontend/css/:path*"
+    },
+    {
+      "source": "/assets/:path*",
+      "destination": "/frontend/assets/:path*"
+    },
+    {
+      "source": "/",
+      "destination": "/frontend/index.html"
+    },
     {
       "source": "/(.*)",
       "destination": "/frontend/$1"

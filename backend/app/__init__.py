@@ -56,6 +56,14 @@ def create_app(config_name: str = None) -> Flask:
     # Register blueprints
     _register_blueprints(app)
 
+    # Global CORS headers on every response
+    @app.after_request
+    def add_cors_headers(response):
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With"
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+        return response
+
     # Register error handlers
     _register_error_handlers(app)
 
