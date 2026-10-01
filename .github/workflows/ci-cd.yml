@@ -2,9 +2,9 @@ name: AgriSmart AI CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ "main", "master" ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ "main", "master" ]
 
 jobs:
   test:
@@ -18,7 +18,7 @@ jobs:
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Install System Dependencies
         run: |
@@ -30,16 +30,14 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install -r backend/requirements.txt
 
-
       - name: Run Test Suite
         working-directory: backend
         env:
-          SECRET_KEY: ci-test-secret-key-12345
-          JWT_SECRET_KEY: ci-test-jwt-secret-key-12345
-          DATABASE_URL: sqlite:///:memory:
-          FRONTEND_URL: http://localhost:5500
-          FLASK_ENV: testing
-          PYTHONPATH: .
+          SECRET_KEY: "ci-test-secret-key-12345"
+          JWT_SECRET_KEY: "ci-test-jwt-secret-key-12345"
+          DATABASE_URL: "sqlite:///:memory:"
+          FRONTEND_URL: "http://localhost:5500"
+          FLASK_ENV: "testing"
+          PYTHONPATH: "."
         run: |
           python -m pytest tests/ -v --tb=short
-
