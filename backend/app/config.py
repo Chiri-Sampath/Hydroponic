@@ -67,7 +67,10 @@ class BaseConfig:
     # CORS & Web Frontend URL
     FRONTEND_URL: str = os.environ.get("FRONTEND_URL", "https://hydroponic-frontend-seven.vercel.app")
 
-    # Email / SMTP Configuration (Gmail)
+    # Email Configuration (Brevo REST API / HTTPS port 443)
+    BREVO_API_KEY: str = os.environ.get("BREVO_API_KEY", "")
+    MAIL_FROM_EMAIL: str = os.environ.get("MAIL_FROM_EMAIL", "hydroponiccrop@gmail.com")
+    MAIL_FROM_NAME: str = os.environ.get("MAIL_FROM_NAME", "AgriSmart AI")
     MAIL_SERVER: str = os.environ.get("MAIL_SERVER", "smtp.gmail.com")
     MAIL_PORT: int = int(os.environ.get("MAIL_PORT", 587))
     MAIL_USE_TLS: bool = os.environ.get("MAIL_USE_TLS", "true").lower() in ("true", "1", "yes")
